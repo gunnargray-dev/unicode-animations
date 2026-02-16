@@ -3,12 +3,22 @@
 // Postinstall animation — showcases a few spinners side-by-side for ~1.5s
 // Skips gracefully in CI or non-interactive environments
 
-// npm 7+ pipes lifecycle script stdio, so isTTY is always false.
-// Use stderr (usually still connected to terminal) for the animation.
-// Skip in CI or when there's genuinely no terminal.
+// npm 7+ captures ALL lifecycle script stdio (stdout + stderr) and swallows
+// output on success. The only way to reach the real terminal is /dev/tty.
+const fs = require('fs');
+const tty = require('tty');
+
 const ci = process.env.CI || process.env.CONTINUOUS_INTEGRATION || process.env.GITHUB_ACTIONS;
-const out = process.stderr.isTTY ? process.stderr : process.stdout.isTTY ? process.stdout : null;
-if (ci || !out) process.exit(0);
+if (ci) process.exit(0);
+
+let out;
+try {
+  const fd = fs.openSync('/dev/tty', 'w');
+  out = new tty.WriteStream(fd);
+} catch {
+  // No controlling terminal (CI, Docker, piped, etc.)
+  process.exit(0);
+}
 
 try {
   const DURATION = 1500;
@@ -32,7 +42,7 @@ try {
 
   out.write(hide);
 
-  const cleanup = () => out.write(show);
+  const cleanup = () => { try { out.write(show); } catch {} };
   process.on('SIGINT', () => { cleanup(); process.exit(0); });
 
   let tick = 0;
