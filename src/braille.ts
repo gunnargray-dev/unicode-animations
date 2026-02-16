@@ -15,8 +15,7 @@ export type BrailleSpinnerName =
   | 'braille' | 'braillewave' | 'dna'
   | 'scan' | 'rain' | 'scanline' | 'pulse' | 'snake'
   | 'sparkle' | 'cascade' | 'columns' | 'orbit' | 'breathe'
-  | 'waverows' | 'checkerboard' | 'helix' | 'fillsweep' | 'diagswipe'
-  | 'arc' | 'halfmoon' | 'line' | 'blocks';
+  | 'waverows' | 'checkerboard' | 'helix' | 'fillsweep' | 'diagswipe';
 
 /* -------------------------------------------
    Braille Grid Utility
@@ -407,24 +406,6 @@ export const spinners: Record<BrailleSpinnerName, Spinner> = {
   helix:        { frames: genHelix(),        interval: 80 },
   fillsweep:    { frames: genFillSweep(),    interval: 100 },
   diagswipe:    { frames: genDiagonalSwipe(), interval: 60 },
-
-  // === Non-braille classics ===
-  arc: {
-    frames: ['◜', '◠', '◝', '◞', '◡', '◟'],
-    interval: 100,
-  },
-  halfmoon: {
-    frames: ['◐', '◓', '◑', '◒'],
-    interval: 180,
-  },
-  line: {
-    frames: ['|', '/', '—', '\\'],
-    interval: 100,
-  },
-  blocks: {
-    frames: ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█', '▇', '▆', '▅', '▄', '▃', '▂'],
-    interval: 100,
-  },
 };
 
 export default spinners;

@@ -34,7 +34,7 @@ if (!out.isTTY) {
     out = new tty.WriteStream(fd);
   } catch {
     // Fallback: no TTY available, just list and exit
-    console.log('22 spinners: ' + names.join(', '));
+    console.log('18 spinners: ' + names.join(', '));
     process.exit(0);
   }
 }
@@ -67,7 +67,7 @@ if (process.stdin.isTTY) {
 
 if (args[0] === '--list' || args[0] === '-l') {
   cleanup();
-  out.write(`\n${bold}22 spinners available:${reset}\n\n`);
+  out.write(`\n${bold}18 spinners available:${reset}\n\n`);
   for (const name of names) {
     const s = S[name];
     out.write(`  ${magenta}${s.frames[0]}${reset}  ${name} ${dim}(${s.frames.length} frames, ${s.interval}ms)${reset}\n`);

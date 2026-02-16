@@ -1,41 +1,5 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`spinners > arc > frames match snapshot 1`] = `
-{
-  "frames": [
-    "◜",
-    "◠",
-    "◝",
-    "◞",
-    "◡",
-    "◟",
-  ],
-  "interval": 100,
-}
-`;
-
-exports[`spinners > blocks > frames match snapshot 1`] = `
-{
-  "frames": [
-    "▁",
-    "▂",
-    "▃",
-    "▄",
-    "▅",
-    "▆",
-    "▇",
-    "█",
-    "▇",
-    "▆",
-    "▅",
-    "▄",
-    "▃",
-    "▂",
-  ],
-  "interval": 100,
-}
-`;
-
 exports[`spinners > braille > frames match snapshot 1`] = `
 {
   "frames": [
@@ -226,18 +190,6 @@ exports[`spinners > fillsweep > frames match snapshot 1`] = `
 }
 `;
 
-exports[`spinners > halfmoon > frames match snapshot 1`] = `
-{
-  "frames": [
-    "◐",
-    "◓",
-    "◑",
-    "◒",
-  ],
-  "interval": 180,
-}
-`;
-
 exports[`spinners > helix > frames match snapshot 1`] = `
 {
   "frames": [
@@ -259,18 +211,6 @@ exports[`spinners > helix > frames match snapshot 1`] = `
     "⡱⣉⡱⣉",
   ],
   "interval": 80,
-}
-`;
-
-exports[`spinners > line > frames match snapshot 1`] = `
-{
-  "frames": [
-    "|",
-    "/",
-    "—",
-    "\\",
-  ],
-  "interval": 100,
 }
 `;
 

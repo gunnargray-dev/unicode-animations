@@ -155,6 +155,59 @@
     }
     footer a { color: var(--accent); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
+
+    .prose {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--text-2);
+      margin-bottom: 1rem;
+    }
+    .prose code, .sub-label code, .ref-table code {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.15rem 0.4rem;
+    }
+    .ref-table code { font-size: 0.75rem; }
+
+    .doc-section {
+      margin-top: 3rem;
+    }
+    .doc-section .usage {
+      margin-top: 1rem;
+    }
+
+    .sub-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text);
+      margin: 1.5rem 0 0.75rem;
+    }
+
+    .ref-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin: 1rem 0;
+    }
+    .ref-table th {
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-3);
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .ref-table td {
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-2);
+    }
+    .ref-table tr:last-child td { border-bottom: none; }
   </style>
 </head>
 <body>
@@ -194,20 +247,214 @@
 clearInterval(timer)
 process.stdout.write(<span class="str">'\r✔ Done.\n'</span>)</pre>
     </section>
+
+    <section class="doc-section">
+      <div class="section-label">Quick start</div>
+      <div class="usage">
+        <pre><span class="cm">// ESM</span>
+<span class="kw">import</span> spinners <span class="kw">from</span> <span class="str">'unicode-animations'</span>
+
+<span class="cm">// CJS</span>
+<span class="kw">const</span> spinners = require(<span class="str">'unicode-animations'</span>)</pre>
+      </div>
+      <p class="prose">Each spinner is a <code>{ frames: string[], interval: number }</code> object.</p>
+    </section>
+
+    <section class="doc-section">
+      <div class="section-label">Examples</div>
+
+      <div class="sub-label">CLI tool — spinner during async work</div>
+      <div class="usage">
+        <pre><span class="kw">import</span> spinners <span class="kw">from</span> <span class="str">'unicode-animations'</span>
+
+<span class="kw">const</span> { frames, interval } = spinners.braille
+<span class="kw">let</span> i = 0
+
+<span class="kw">const</span> spinner = setInterval(() => {
+  process.stdout.write(<span class="str">`\r\x1B[2K  ${frames[i++ % frames.length]} Deploying...`</span>)
+}, interval)
+
+<span class="kw">await</span> deploy()
+
+clearInterval(spinner)
+process.stdout.write(<span class="str">'\r\x1B[2K  ✔ Deployed.\n'</span>)</pre>
+      </div>
+
+      <div class="sub-label">Reusable spinner helper</div>
+      <div class="usage">
+        <pre><span class="kw">import</span> spinners <span class="kw">from</span> <span class="str">'unicode-animations'</span>
+
+<span class="kw">function</span> createSpinner(msg, name = <span class="str">'braille'</span>) {
+  <span class="kw">const</span> { frames, interval } = spinners[name]
+  <span class="kw">let</span> i = 0, text = msg
+  <span class="kw">const</span> timer = setInterval(() => {
+    process.stdout.write(<span class="str">`\r\x1B[2K  ${frames[i++ % frames.length]} ${text}`</span>)
+  }, interval)
+
+  <span class="kw">return</span> {
+    update(msg) { text = msg },
+    stop(msg) { clearInterval(timer); process.stdout.write(<span class="str">`\r\x1B[2K  ✔ ${msg}\n`</span>) },
+  }
+}
+
+<span class="kw">const</span> s = createSpinner(<span class="str">'Connecting to database...'</span>)
+<span class="kw">const</span> db = <span class="kw">await</span> connect()
+s.update(<span class="str">`Running ${migrations.length} migrations...`</span>)
+<span class="kw">await</span> db.migrate(migrations)
+s.stop(<span class="str">'Database ready.'</span>)</pre>
+      </div>
+
+      <div class="sub-label">Multi-step pipeline</div>
+      <div class="usage">
+        <pre><span class="kw">import</span> spinners <span class="kw">from</span> <span class="str">'unicode-animations'</span>
+
+<span class="kw">async function</span> runWithSpinner(label, fn, name = <span class="str">'braille'</span>) {
+  <span class="kw">const</span> { frames, interval } = spinners[name]
+  <span class="kw">let</span> i = 0
+  <span class="kw">const</span> timer = setInterval(() => {
+    process.stdout.write(<span class="str">`\r\x1B[2K  ${frames[i++ % frames.length]} ${label}`</span>)
+  }, interval)
+  <span class="kw">const</span> result = <span class="kw">await</span> fn()
+  clearInterval(timer)
+  process.stdout.write(<span class="str">`\r\x1B[2K  ✔ ${label}\n`</span>)
+  <span class="kw">return</span> result
+}
+
+<span class="kw">await</span> runWithSpinner(<span class="str">'Linting...'</span>, lint, <span class="str">'scan'</span>)
+<span class="kw">await</span> runWithSpinner(<span class="str">'Running tests...'</span>, test, <span class="str">'helix'</span>)
+<span class="kw">await</span> runWithSpinner(<span class="str">'Building...'</span>, build, <span class="str">'cascade'</span>)
+<span class="kw">await</span> runWithSpinner(<span class="str">'Publishing...'</span>, publish, <span class="str">'braille'</span>)</pre>
+      </div>
+
+      <div class="sub-label">React component</div>
+      <div class="usage">
+        <pre><span class="kw">import</span> { useState, useEffect } <span class="kw">from</span> <span class="str">'react'</span>
+<span class="kw">import</span> spinners <span class="kw">from</span> <span class="str">'unicode-animations'</span>
+
+<span class="kw">function</span> Spinner({ name = <span class="str">'braille'</span>, children }) {
+  <span class="kw">const</span> [frame, setFrame] = useState(0)
+  <span class="kw">const</span> s = spinners[name]
+
+  useEffect(() => {
+    <span class="kw">const</span> timer = setInterval(
+      () => setFrame(f => (f + 1) % s.frames.length),
+      s.interval
+    )
+    <span class="kw">return</span> () => clearInterval(timer)
+  }, [name])
+
+  <span class="kw">return</span> &lt;span style={{ fontFamily: <span class="str">'monospace'</span> }}>{s.frames[frame]} {children}&lt;/span>
+}
+
+<span class="cm">// Usage: &lt;Spinner name="helix">Generating response...&lt;/Spinner></span></pre>
+      </div>
+
+      <div class="sub-label">Browser — status indicator</div>
+      <div class="usage">
+        <pre><span class="kw">import</span> spinners <span class="kw">from</span> <span class="str">'unicode-animations'</span>
+
+<span class="kw">const</span> el = document.getElementById(<span class="str">'status'</span>)
+<span class="kw">const</span> { frames, interval } = spinners.orbit
+<span class="kw">let</span> i = 0
+
+<span class="kw">const</span> spinner = setInterval(() => {
+  el.textContent = <span class="str">`${frames[i++ % frames.length]} Syncing...`</span>
+}, interval)
+
+<span class="kw">await</span> sync()
+clearInterval(spinner)
+el.textContent = <span class="str">'✔ Synced'</span></pre>
+      </div>
+    </section>
+
+    <section class="doc-section">
+      <div class="section-label">All spinners</div>
+
+      <div class="sub-label">Classic braille</div>
+      <table class="ref-table">
+        <thead><tr><th>Name</th><th>Preview</th><th>Interval</th></tr></thead>
+        <tbody>
+          <tr><td><code>braille</code></td><td><code>⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏</code></td><td>80ms</td></tr>
+          <tr><td><code>braillewave</code></td><td><code>⠁⠂⠄⡀</code> → <code>⠂⠄⡀⢀</code></td><td>100ms</td></tr>
+          <tr><td><code>dna</code></td><td><code>⠋⠉⠙⠚</code> → <code>⠉⠙⠚⠒</code></td><td>80ms</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-label">Grid animations (braille)</div>
+      <table class="ref-table">
+        <thead><tr><th>Name</th><th>Frames</th><th>Interval</th></tr></thead>
+        <tbody>
+          <tr><td><code>scan</code></td><td>10</td><td>70ms</td></tr>
+          <tr><td><code>rain</code></td><td>12</td><td>100ms</td></tr>
+          <tr><td><code>scanline</code></td><td>6</td><td>120ms</td></tr>
+          <tr><td><code>pulse</code></td><td>5</td><td>180ms</td></tr>
+          <tr><td><code>snake</code></td><td>16</td><td>80ms</td></tr>
+          <tr><td><code>sparkle</code></td><td>6</td><td>150ms</td></tr>
+          <tr><td><code>cascade</code></td><td>12</td><td>60ms</td></tr>
+          <tr><td><code>columns</code></td><td>26</td><td>60ms</td></tr>
+          <tr><td><code>orbit</code></td><td>8</td><td>100ms</td></tr>
+          <tr><td><code>breathe</code></td><td>17</td><td>100ms</td></tr>
+          <tr><td><code>waverows</code></td><td>16</td><td>90ms</td></tr>
+          <tr><td><code>checkerboard</code></td><td>4</td><td>250ms</td></tr>
+          <tr><td><code>helix</code></td><td>16</td><td>80ms</td></tr>
+          <tr><td><code>fillsweep</code></td><td>11</td><td>100ms</td></tr>
+          <tr><td><code>diagswipe</code></td><td>16</td><td>60ms</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="doc-section">
+      <div class="section-label">Custom spinners</div>
+      <p class="prose">Create your own braille spinners using the grid utilities:</p>
+      <div class="usage">
+        <pre><span class="kw">import</span> { gridToBraille, makeGrid } <span class="kw">from</span> <span class="str">'unicode-animations'</span>
+
+<span class="cm">// Create a 4-row × 4-col grid</span>
+<span class="kw">const</span> grid = makeGrid(4, 4)
+grid[0][0] = <span class="kw">true</span>
+grid[1][1] = <span class="kw">true</span>
+grid[2][2] = <span class="kw">true</span>
+grid[3][3] = <span class="kw">true</span>
+
+console.log(gridToBraille(grid)) <span class="cm">// diagonal braille pattern</span></pre>
+      </div>
+      <p class="prose"><code>makeGrid(rows, cols)</code> returns a <code>boolean[][]</code>. Set cells to <code>true</code> to raise dots. <code>gridToBraille(grid)</code> converts it to a braille string (2 dot-columns per character).</p>
+    </section>
+
+    <section class="doc-section">
+      <div class="section-label">API</div>
+
+      <div class="sub-label">Spinner</div>
+      <div class="usage">
+        <pre><span class="kw">interface</span> Spinner {
+  <span class="kw">readonly</span> frames: <span class="kw">readonly</span> string[]
+  <span class="kw">readonly</span> interval: number
+}</pre>
+      </div>
+
+      <div class="sub-label">Exports from <code>'unicode-animations'</code></div>
+      <table class="ref-table">
+        <thead><tr><th>Export</th><th>Type</th></tr></thead>
+        <tbody>
+          <tr><td><code>default</code> / <code>spinners</code></td><td><code>Record&lt;BrailleSpinnerName, Spinner></code></td></tr>
+          <tr><td><code>gridToBraille(grid)</code></td><td><code>(boolean[][]) => string</code></td></tr>
+          <tr><td><code>makeGrid(rows, cols)</code></td><td><code>(number, number) => boolean[][]</code></td></tr>
+          <tr><td><code>Spinner</code></td><td>TypeScript interface</td></tr>
+          <tr><td><code>BrailleSpinnerName</code></td><td>Union type of all 18 spinner names</td></tr>
+        </tbody>
+      </table>
+      <p class="prose">The subpath <code>'unicode-animations/braille'</code> re-exports everything from the main entrypoint.</p>
+    </section>
   </main>
 
   <footer>
-    <a href="https://github.com/gunnargray-dev/unicode-animations">GitHub</a>
+    made by <a href="https://x.com/gunnargray">Gunnar Gray</a>
     &nbsp;·&nbsp; MIT License
   </footer>
 
 <script src="../dist/braille.global.js"></script>
 <script>
-// Filter to braille spinners only (exclude classic unicode)
-const nonBraille = new Set(['arc', 'halfmoon', 'line', 'blocks']);
-const spinners = Object.fromEntries(
-  Object.entries(UnicodeAnimations.spinners).filter(([name]) => !nonBraille.has(name))
-);
+const spinners = UnicodeAnimations.spinners;
 
 // Build grid
 const grid = document.getElementById('spinnerGrid');

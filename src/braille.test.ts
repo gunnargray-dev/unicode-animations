@@ -103,10 +103,9 @@ describe('spinners', () => {
     'scan', 'rain', 'scanline', 'pulse', 'snake',
     'sparkle', 'cascade', 'columns', 'orbit', 'breathe',
     'waverows', 'checkerboard', 'helix', 'fillsweep', 'diagswipe',
-    'arc', 'halfmoon', 'line', 'blocks',
   ];
 
-  it('exports all 22 spinners', () => {
+  it('exports all 18 spinners', () => {
     expect(Object.keys(spinners).sort()).toEqual([...allNames].sort());
   });
 

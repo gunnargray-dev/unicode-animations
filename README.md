@@ -4,7 +4,7 @@ Unicode spinner animations as raw frame data — no dependencies, works everywhe
 
 ## Demo
 
-See all 22 spinners animating live:
+See all 18 spinners animating live:
 
 ```bash
 npx unicode-animations --web     # open browser demo
@@ -171,15 +171,6 @@ el.textContent = '✔ Synced';
 | `fillsweep` | 11 | 100ms |
 | `diagswipe` | 16 | 60ms |
 
-### Non-braille classics
-
-| Name | Preview | Interval |
-|------|---------|----------|
-| `arc` | `◜ ◠ ◝ ◞ ◡ ◟` | 100ms |
-| `halfmoon` | `◐ ◓ ◑ ◒` | 180ms |
-| `line` | `\| / — \` | 100ms |
-| `blocks` | `▁ ▂ ▃ ▄ ▅ ▆ ▇ █ ▇ ▆ ▅ ▄ ▃ ▂` | 100ms |
-
 ## Custom spinners
 
 Create your own braille spinners using the grid utilities:
@@ -218,7 +209,7 @@ interface Spinner {
 | `gridToBraille(grid)` | `(boolean[][]) => string` |
 | `makeGrid(rows, cols)` | `(number, number) => boolean[][]` |
 | `Spinner` | TypeScript interface |
-| `BrailleSpinnerName` | Union type of all 22 spinner names |
+| `BrailleSpinnerName` | Union type of all 18 spinner names |
 
 ### Exports from `'unicode-animations/braille'`
 

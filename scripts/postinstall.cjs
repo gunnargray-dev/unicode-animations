@@ -7,6 +7,9 @@ const path = require('path');
 const ci = process.env.CI || process.env.CONTINUOUS_INTEGRATION || process.env.GITHUB_ACTIONS;
 if (ci) process.exit(0);
 
+// Skip postinstall when run via npx (temporary install for CLI usage)
+if (__dirname.includes('_npx')) process.exit(0);
+
 let out;
 try {
   const fd = fs.openSync('/dev/tty', 'w');
@@ -41,7 +44,7 @@ try {
   // Narrow terminal fallback
   const termCols = out.columns || 80;
   if (termCols < 60) {
-    out.write(`\n  ${B}unicode-animations${R} ${D}— 18 braille spinners + 4 classics${R}\n\n`);
+    out.write(`\n  ${B}unicode-animations${R} ${D}— 18 braille spinners${R}\n\n`);
     cleanup();
     return;
   }
@@ -68,10 +71,18 @@ try {
     ['fillsweep', 'scanline',     'braillewave'],
     ['diagswipe', 'checkerboard', 'dna'],
   ];
-  const FPAD = 5;
   const NPAD = 13;
-  const COL_W = FPAD + 1 + NPAD;
-  const GRID_W = COL_W * 3 + 4;
+
+  // Compute max frame width per column for consistent spacing
+  const colFPad = [0, 1, 2].map(c => {
+    let max = 0;
+    for (const row of layout) {
+      const sp = S[row[c]];
+      for (const f of sp.frames) max = Math.max(max, [...f].length);
+    }
+    return max;
+  });
+  const GRID_W = colFPad.reduce((sum, fp) => sum + fp + 1 + NPAD, 0) + 4;
   const CONTENT_W = Math.max(GRID_W, titleW) + 4;
 
   // ─── Crop marks ───
@@ -81,9 +92,13 @@ try {
   const topCrop  = cropPad + '\u280F' + '\u2809'.repeat(ARM) + ' '.repeat(inner) + '\u2809'.repeat(ARM) + '\u28B9';
   const botCrop  = cropPad + '\u28C7' + '\u28C0'.repeat(ARM) + ' '.repeat(inner) + '\u28C0'.repeat(ARM) + '\u28F8';
 
-  // Indent title and subtitle
-  const titlePad = '  ';
-  const subtitlePad = ' '.repeat(Math.max(2, Math.floor((titleW - 18) / 2) + 2));
+  // Center each element within the crop frame
+  function centerPad(w) {
+    return cropPad + ' '.repeat(Math.max(0, Math.floor((CONTENT_W - w) / 2)));
+  }
+  // Left-align all content to the same column, centered as a block within crops
+  const contentW = Math.max(GRID_W, titleW);
+  const contentPad = cropPad + ' '.repeat(Math.max(0, Math.floor((CONTENT_W - contentW) / 2)));
 
   // ─── Render spinner grid ───
   const ROWS = layout.length;
@@ -91,12 +106,12 @@ try {
   function renderGrid(tick) {
     let buf = '';
     for (const row of layout) {
-      let line = '     ';
+      let line = contentPad;
       for (let c = 0; c < 3; c++) {
         const name = row[c];
         const sp = S[name];
         const frame = sp.frames[tick % sp.frames.length];
-        line += B + pad(frame, FPAD) + R + ' ' + D + pad(name, NPAD) + R;
+        line += B + pad(frame, colFPad[c]) + R + ' ' + D + pad(name, NPAD) + R;
         if (c < 2) line += '  ';
       }
       buf += line + '\n';
@@ -110,26 +125,14 @@ try {
   top += '\n';
   for (let i = 0; i < titleLines.length; i++) {
     const style = i === titleLines.length - 1 ? D : B;
-    top += titlePad + style + titleLines[i] + R + '\n';
+    top += contentPad + style + titleLines[i] + R + '\n';
   }
-  top += subtitlePad + D + 'BRAILLE ANIMATIONS' + R + '\n';
+  top += contentPad + D + 'BRAILLE ANIMATIONS' + R + '\n';
   top += '\n';
   out.write(top);
 
   // ─── Print first frame of spinners ───
-  out.write('\x1B7');
   out.write(renderGrid(0));
-
-  // ─── Print static bottom ───
-  let bot = '\n';
-  bot += '     ' + D + 'npx unicode-animations' + R + '           ' + D + 'demo all spinners' + R + '\n';
-  bot += '     ' + D + 'npx unicode-animations --list' + R + '    ' + D + 'list all spinners' + R + '\n';
-  bot += '     ' + D + 'npx unicode-animations --web' + R + '     ' + D + 'open in browser' + R + '\n';
-  bot += '\n';
-  bot += botCrop + '\n';
-  out.write(bot);
-
-  const LINES_BELOW = 6;
 
   // ─── Animate ───
   let tick = 1;
@@ -138,13 +141,24 @@ try {
   const timer = setInterval(() => {
     if (Date.now() - start >= DURATION) {
       clearInterval(timer);
-      out.write('\x1B8');
-      out.write(`\x1B[${ROWS + LINES_BELOW}B`);
-      out.write('\n');
+      // Print static bottom
+      let bot = '\n';
+      const cmds = [
+        ['npx unicode-animations',        'demo all spinners'],
+        ['npx unicode-animations --list',  'list all spinners'],
+        ['npx unicode-animations --web',   'open in browser'],
+      ];
+      for (const [left, right] of cmds) {
+        const gap = ' '.repeat(Math.max(2, contentW - left.length - right.length));
+        bot += contentPad + D + left + R + gap + D + right + R + '\n';
+      }
+      bot += '\n';
+      bot += botCrop + '\n\n';
+      out.write(bot);
       cleanup();
       return;
     }
-    out.write('\x1B8');
+    out.write(`\x1B[${ROWS}A`);
     out.write(renderGrid(tick));
     tick++;
   }, INTERVAL);
