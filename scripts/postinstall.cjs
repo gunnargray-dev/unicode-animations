@@ -1,10 +1,5 @@
 #!/usr/bin/env node
 
-// Postinstall animation — showcases a few spinners side-by-side for ~1.5s
-// Skips gracefully in CI or non-interactive environments
-
-// npm 7+ captures ALL lifecycle script stdio (stdout + stderr) and swallows
-// output on success. The only way to reach the real terminal is /dev/tty.
 const fs = require('fs');
 const tty = require('tty');
 
@@ -16,52 +11,62 @@ try {
   const fd = fs.openSync('/dev/tty', 'w');
   out = new tty.WriteStream(fd);
 } catch {
-  // No controlling terminal (CI, Docker, piped, etc.)
   process.exit(0);
 }
 
 try {
-  const DURATION = 1500;
-  const INTERVAL = 80;
+  const W = 58; // inner width between │ bars
 
-  // Inline a few single-char spinners to avoid importing dist (may not exist yet)
-  const spinners = [
-    { frames: ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'] }, // braille
-    { frames: ['◜', '◠', '◝', '◞', '◡', '◟'] },                           // arc
-    { frames: ['◐', '◓', '◑', '◒'] },                                       // halfmoon
-    { frames: ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█', '▇', '▆', '▅', '▄', '▃', '▂'] }, // blocks
-    { frames: ['|', '/', '—', '\\'] },                                        // line
+  const d = '\x1B[2m';    // dim
+  const b = '\x1B[1m';    // bold
+  const r = '\x1B[0m';    // reset
+  const c = '\x1B[36m';   // cyan
+  const g = '\x1B[32m';   // green
+  const y = '\x1B[33m';   // yellow
+  const m = '\x1B[35m';   // magenta
+  const w = '\x1B[37m';   // white
+
+  // Pad visible text to exactly W chars, preserving ANSI codes
+  function row(ansiStr) {
+    const vis = ansiStr.replace(/\x1B\[[0-9;]*m/g, '');
+    const pad = W - vis.length;
+    return `${d}  │${r}${ansiStr}${' '.repeat(Math.max(0, pad))}${d}│${r}`;
+  }
+
+  const top = `${d}  ╭${'─'.repeat(W)}╮${r}`;
+  const bot = `${d}  ╰${'─'.repeat(W)}╯${r}`;
+  const blank = row('');
+
+  const lines = [
+    '',
+    top,
+    blank,
+    row(`   ${b}${w}██╗   ██╗${r}${d}██╗${r}  ${d}██╗${r}${b}${w}██╗${r}  ${b}${w}█████╗${r}  `),
+    row(`   ${b}${w}██║   ██║${r}${d}███╗ ██║${r}${b}${w}██║${r} ${b}${w}██╔══██╗${r} `),
+    row(`   ${b}${w}██║   ██║${r}${d}██╔████║${r}${b}${w}██║${r} ${b}${w}███████║${r} `),
+    row(`   ${b}${w}██║   ██║${r}${d}██║╚███║${r}${b}${w}██║${r} ${b}${w}██╔══██║${r} `),
+    row(`   ${b}${w}╚██████╔╝${r}${d}██║ ╚██║${r}${b}${w}██║${r} ${b}${w}██║  ██║${r} `),
+    row(`    ${d}╚═════╝ ╚═╝  ╚═╝╚═╝ ╚═╝  ╚═╝${r} `),
+    row(`         ${b}${c}a n i m a t i o n s${r}`),
+    blank,
+    row(`   ${d}22 unicode spinners as raw frame data${r}`),
+    row(`   ${d}Zero dependencies · ESM + CJS · Node + Browser${r}`),
+    blank,
+    row(`   ${y}import${r} spinners ${y}from${r} ${g}'unicode-animations'${r}`),
+    blank,
+    row(`   ${d}const${r} { frames, interval } = spinners.${c}braille${r}`),
+    blank,
+    row(`   ${m}⠋ ⠙ ⠹ ⠸ ⠼ ⠴${r}  ${d}braille${r}    ${m}◜ ◠ ◝ ◞ ◡ ◟${r}  ${d}arc${r}`),
+    row(`   ${m}◐ ◓ ◑ ◒${r}      ${d}halfmoon${r}   ${m}▁ ▂ ▃ ▄ ▅ ▆${r}  ${d}blocks${r}`),
+    blank,
+    row(`   ${d}+ 18 more braille grid animations${r}`),
+    row(`   ${c}https://github.com/gunnargray-dev/unicode-animations${r}`),
+    blank,
+    bot,
+    '',
   ];
 
-  const hide = '\x1B[?25l';
-  const show = '\x1B[?25h';
-  const clearLine = '\x1B[2K\r';
-  const bold = '\x1B[1m';
-  const green = '\x1B[32m';
-  const reset = '\x1B[0m';
-
-  out.write(hide);
-
-  const cleanup = () => { try { out.write(show); } catch {} };
-  process.on('SIGINT', () => { cleanup(); process.exit(0); });
-
-  let tick = 0;
-  const start = Date.now();
-
-  const timer = setInterval(() => {
-    if (Date.now() - start >= DURATION) {
-      clearInterval(timer);
-      const done = `${clearLine}  ${green}${bold}✔${reset} ${bold}unicode-animations${reset} — 22 spinners ready\n`;
-      out.write(done);
-      cleanup();
-      return;
-    }
-
-    const chars = spinners.map(s => s.frames[tick % s.frames.length]);
-    out.write(`${clearLine}  ${chars.join('  ')}`);
-    tick++;
-  }, INTERVAL);
+  out.write(lines.join('\n') + '\n');
 } catch {
-  // Never block install
   process.exit(0);
 }
