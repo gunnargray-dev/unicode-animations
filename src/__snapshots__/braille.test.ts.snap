@@ -1,0 +1,418 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`spinners > arc > frames match snapshot 1`] = `
+{
+  "frames": [
+    "◜",
+    "◠",
+    "◝",
+    "◞",
+    "◡",
+    "◟",
+  ],
+  "interval": 100,
+}
+`;
+
+exports[`spinners > blocks > frames match snapshot 1`] = `
+{
+  "frames": [
+    "▁",
+    "▂",
+    "▃",
+    "▄",
+    "▅",
+    "▆",
+    "▇",
+    "█",
+    "▇",
+    "▆",
+    "▅",
+    "▄",
+    "▃",
+    "▂",
+  ],
+  "interval": 100,
+}
+`;
+
+exports[`spinners > braille > frames match snapshot 1`] = `
+{
+  "frames": [
+    "⠋",
+    "⠙",
+    "⠹",
+    "⠸",
+    "⠼",
+    "⠴",
+    "⠦",
+    "⠧",
+    "⠇",
+    "⠏",
+  ],
+  "interval": 80,
+}
+`;
+
+exports[`spinners > braillewave > frames match snapshot 1`] = `
+{
+  "frames": [
+    "⠁⠂⠄⡀",
+    "⠂⠄⡀⢀",
+    "⠄⡀⢀⠠",
+    "⡀⢀⠠⠐",
+    "⢀⠠⠐⠈",
+    "⠠⠐⠈⠁",
+    "⠐⠈⠁⠂",
+    "⠈⠁⠂⠄",
+  ],
+  "interval": 100,
+}
+`;
+
+exports[`spinners > breathe > frames match snapshot 1`] = `
+{
+  "frames": [
+    "⠀",
+    "⠂",
+    "⠌",
+    "⡑",
+    "⢕",
+    "⢝",
+    "⣫",
+    "⣟",
+    "⣿",
+    "⣟",
+    "⣫",
+    "⢝",
+    "⢕",
+    "⡑",
+    "⠌",
+    "⠂",
+    "⠀",
+  ],
+  "interval": 100,
+}
+`;
+
+exports[`spinners > cascade > frames match snapshot 1`] = `
+{
+  "frames": [
+    "⠀⠀⠀⠀",
+    "⠀⠀⠀⠀",
+    "⠁⠀⠀⠀",
+    "⠋⠀⠀⠀",
+    "⠞⠁⠀⠀",
+    "⡴⠋⠀⠀",
+    "⣠⠞⠁⠀",
+    "⢀⡴⠋⠀",
+    "⠀⣠⠞⠁",
+    "⠀⢀⡴⠋",
+    "⠀⠀⣠⠞",
+    "⠀⠀⢀⡴",
+    "⠀⠀⠀⣠",
+    "⠀⠀⠀⢀",
+  ],
+  "interval": 60,
+}
+`;
+
+exports[`spinners > checkerboard > frames match snapshot 1`] = `
+{
+  "frames": [
+    "⢕⢕⢕",
+    "⡪⡪⡪",
+    "⢊⠔⡡",
+    "⡡⢊⠔",
+  ],
+  "interval": 250,
+}
+`;
+
+exports[`spinners > columns > frames match snapshot 1`] = `
+{
+  "frames": [
+    "⡀⠀⠀",
+    "⡄⠀⠀",
+    "⡆⠀⠀",
+    "⡇⠀⠀",
+    "⣇⠀⠀",
+    "⣧⠀⠀",
+    "⣷⠀⠀",
+    "⣿⠀⠀",
+    "⣿⡀⠀",
+    "⣿⡄⠀",
+    "⣿⡆⠀",
+    "⣿⡇⠀",
+    "⣿⣇⠀",
+    "⣿⣧⠀",
+    "⣿⣷⠀",
+    "⣿⣿⠀",
+    "⣿⣿⡀",
+    "⣿⣿⡄",
+    "⣿⣿⡆",
+    "⣿⣿⡇",
+    "⣿⣿⣇",
+    "⣿⣿⣧",
+    "⣿⣿⣷",
+    "⣿⣿⣿",
+    "⣿⣿⣿",
+    "⠀⠀⠀",
+  ],
+  "interval": 60,
+}
+`;
+
+exports[`spinners > diagswipe > frames match snapshot 1`] = `
+{
+  "frames": [
+    "⠁⠀",
+    "⠋⠀",
+    "⠟⠁",
+    "⡿⠋",
+    "⣿⠟",
+    "⣿⡿",
+    "⣿⣿",
+    "⣿⣿",
+    "⣾⣿",
+    "⣴⣿",
+    "⣠⣾",
+    "⢀⣴",
+    "⠀⣠",
+    "⠀⢀",
+    "⠀⠀",
+    "⠀⠀",
+  ],
+  "interval": 60,
+}
+`;
+
+exports[`spinners > dna > frames match snapshot 1`] = `
+{
+  "frames": [
+    "⠋⠉⠙⠚",
+    "⠉⠙⠚⠒",
+    "⠙⠚⠒⠂",
+    "⠚⠒⠂⠂",
+    "⠒⠂⠂⠒",
+    "⠂⠂⠒⠲",
+    "⠂⠒⠲⠴",
+    "⠒⠲⠴⠤",
+    "⠲⠴⠤⠄",
+    "⠴⠤⠄⠋",
+    "⠤⠄⠋⠉",
+    "⠄⠋⠉⠙",
+  ],
+  "interval": 80,
+}
+`;
+
+exports[`spinners > fillsweep > frames match snapshot 1`] = `
+{
+  "frames": [
+    "⣀⣀",
+    "⣤⣤",
+    "⣶⣶",
+    "⣿⣿",
+    "⣿⣿",
+    "⣿⣿",
+    "⣶⣶",
+    "⣤⣤",
+    "⣀⣀",
+    "⠀⠀",
+    "⠀⠀",
+  ],
+  "interval": 100,
+}
+`;
+
+exports[`spinners > halfmoon > frames match snapshot 1`] = `
+{
+  "frames": [
+    "◐",
+    "◓",
+    "◑",
+    "◒",
+  ],
+  "interval": 180,
+}
+`;
+
+exports[`spinners > helix > frames match snapshot 1`] = `
+{
+  "frames": [
+    "⢌⣉⢎⣉",
+    "⣉⡱⣉⡱",
+    "⣉⢎⣉⢎",
+    "⡱⣉⡱⣉",
+    "⢎⣉⢎⣉",
+    "⣉⡱⣉⡱",
+    "⣉⢎⣉⢎",
+    "⡱⣉⡱⣉",
+    "⢎⣉⢎⣉",
+    "⣉⡱⣉⡱",
+    "⣉⢎⣉⢎",
+    "⡱⣉⡱⣉",
+    "⢎⣉⢎⣉",
+    "⣉⡱⣉⡱",
+    "⣉⢎⣉⢎",
+    "⡱⣉⡱⣉",
+  ],
+  "interval": 80,
+}
+`;
+
+exports[`spinners > line > frames match snapshot 1`] = `
+{
+  "frames": [
+    "|",
+    "/",
+    "—",
+    "\\",
+  ],
+  "interval": 100,
+}
+`;
+
+exports[`spinners > orbit > frames match snapshot 1`] = `
+{
+  "frames": [
+    "⠃",
+    "⠉",
+    "⠘",
+    "⠰",
+    "⢠",
+    "⣀",
+    "⡄",
+    "⠆",
+  ],
+  "interval": 100,
+}
+`;
+
+exports[`spinners > pulse > frames match snapshot 1`] = `
+{
+  "frames": [
+    "⠀⠶⠀",
+    "⠰⣿⠆",
+    "⢾⣉⡷",
+    "⣏⠀⣹",
+    "⡁⠀⢈",
+  ],
+  "interval": 180,
+}
+`;
+
+exports[`spinners > rain > frames match snapshot 1`] = `
+{
+  "frames": [
+    "⢁⠂⠔⠈",
+    "⠂⠌⡠⠐",
+    "⠄⡐⢀⠡",
+    "⡈⠠⠀⢂",
+    "⠐⢀⠁⠄",
+    "⠠⠁⠊⡀",
+    "⢁⠂⠔⠈",
+    "⠂⠌⡠⠐",
+    "⠄⡐⢀⠡",
+    "⡈⠠⠀⢂",
+    "⠐⢀⠁⠄",
+    "⠠⠁⠊⡀",
+  ],
+  "interval": 100,
+}
+`;
+
+exports[`spinners > scan > frames match snapshot 1`] = `
+{
+  "frames": [
+    "⠀⠀⠀⠀",
+    "⡇⠀⠀⠀",
+    "⣿⠀⠀⠀",
+    "⢸⡇⠀⠀",
+    "⠀⣿⠀⠀",
+    "⠀⢸⡇⠀",
+    "⠀⠀⣿⠀",
+    "⠀⠀⢸⡇",
+    "⠀⠀⠀⣿",
+    "⠀⠀⠀⢸",
+  ],
+  "interval": 70,
+}
+`;
+
+exports[`spinners > scanline > frames match snapshot 1`] = `
+{
+  "frames": [
+    "⠉⠉⠉",
+    "⠓⠓⠓",
+    "⠦⠦⠦",
+    "⣄⣄⣄",
+    "⠦⠦⠦",
+    "⠓⠓⠓",
+  ],
+  "interval": 120,
+}
+`;
+
+exports[`spinners > snake > frames match snapshot 1`] = `
+{
+  "frames": [
+    "⣁⡀",
+    "⣉⠀",
+    "⡉⠁",
+    "⠉⠉",
+    "⠈⠙",
+    "⠀⠛",
+    "⠐⠚",
+    "⠒⠒",
+    "⠖⠂",
+    "⠶⠀",
+    "⠦⠄",
+    "⠤⠤",
+    "⠠⢤",
+    "⠀⣤",
+    "⢀⣠",
+    "⣀⣀",
+  ],
+  "interval": 80,
+}
+`;
+
+exports[`spinners > sparkle > frames match snapshot 1`] = `
+{
+  "frames": [
+    "⡡⠊⢔⠡",
+    "⠊⡰⡡⡘",
+    "⢔⢅⠈⢢",
+    "⡁⢂⠆⡍",
+    "⢔⠨⢑⢐",
+    "⠨⡑⡠⠊",
+  ],
+  "interval": 150,
+}
+`;
+
+exports[`spinners > waverows > frames match snapshot 1`] = `
+{
+  "frames": [
+    "⠖⠉⠉⠑",
+    "⡠⠖⠉⠉",
+    "⣠⡠⠖⠉",
+    "⣄⣠⡠⠖",
+    "⠢⣄⣠⡠",
+    "⠙⠢⣄⣠",
+    "⠉⠙⠢⣄",
+    "⠊⠉⠙⠢",
+    "⠜⠊⠉⠙",
+    "⡤⠜⠊⠉",
+    "⣀⡤⠜⠊",
+    "⢤⣀⡤⠜",
+    "⠣⢤⣀⡤",
+    "⠑⠣⢤⣀",
+    "⠉⠑⠣⢤",
+    "⠋⠉⠑⠣",
+  ],
+  "interval": 90,
+}
+`;

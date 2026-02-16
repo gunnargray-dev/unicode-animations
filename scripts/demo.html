@@ -201,58 +201,13 @@ process.stdout.write(<span class="str">'\r✔ Done.\n'</span>)</pre>
     &nbsp;·&nbsp; MIT License
   </footer>
 
+<script src="../dist/braille.global.js"></script>
 <script>
-// Spinner data (inlined from the package)
-const BRAILLE_DOT_MAP = [[0x01,0x08],[0x02,0x10],[0x04,0x20],[0x40,0x80]];
-function gridToBraille(grid) {
-  const rows = grid.length, cols = grid[0]?.length || 0, cc = Math.ceil(cols / 2);
-  let r = '';
-  for (let c = 0; c < cc; c++) {
-    let code = 0x2800;
-    for (let ri = 0; ri < 4 && ri < rows; ri++)
-      for (let d = 0; d < 2; d++) { const col = c*2+d; if (col < cols && grid[ri]?.[col]) code |= BRAILLE_DOT_MAP[ri][d]; }
-    r += String.fromCodePoint(code);
-  }
-  return r;
-}
-function makeGrid(r,c) { return Array.from({length:r},()=>Array(c).fill(false)); }
-
-function genScan(){const W=8,H=4,f=[];for(let p=-1;p<W+1;p++){const g=makeGrid(H,W);for(let r=0;r<H;r++)for(let c=0;c<W;c++)if(c===p||c===p-1)g[r][c]=true;f.push(gridToBraille(g))}return f}
-function genRain(){const W=8,H=4,n=12,f=[],o=[0,3,1,5,2,7,4,6];for(let i=0;i<n;i++){const g=makeGrid(H,W);for(let c=0;c<W;c++){const r=(i+o[c])%(H+2);if(r<H)g[r][c]=true}f.push(gridToBraille(g))}return f}
-function genScanLine(){const W=6,H=4,f=[],p=[0,1,2,3,2,1];for(const row of p){const g=makeGrid(H,W);for(let c=0;c<W;c++){g[row][c]=true;if(row>0)g[row-1][c]=(c%2===0)}f.push(gridToBraille(g))}return f}
-function genPulse(){const W=6,H=4,f=[],cx=W/2-0.5,cy=H/2-0.5;for(const r of[0.5,1.2,2,3,3.5]){const g=makeGrid(H,W);for(let row=0;row<H;row++)for(let col=0;col<W;col++)if(Math.abs(Math.sqrt((col-cx)**2+(row-cy)**2)-r)<0.9)g[row][col]=true;f.push(gridToBraille(g))}return f}
-function genSnake(){const W=4,H=4,path=[];for(let r=0;r<H;r++)if(r%2===0)for(let c=0;c<W;c++)path.push([r,c]);else for(let c=W-1;c>=0;c--)path.push([r,c]);const f=[];for(let i=0;i<path.length;i++){const g=makeGrid(H,W);for(let t=0;t<4;t++){const idx=(i-t+path.length)%path.length;g[path[idx][0]][path[idx][1]]=true}f.push(gridToBraille(g))}return f}
-function genSparkle(){const ps=[[1,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0,1,1,0,0,0,0,1,0,0],[0,1,0,0,1,0,0,1,1,0,0,1,0,0,0,1,0,0,0,1,0,1,0,0,0,0,1,0,1,0,1,0],[0,0,1,0,0,1,0,0,0,1,0,0,0,0,1,0,1,0,1,0,0,0,0,1,0,1,0,1,0,0,0,1],[1,0,0,0,0,0,1,1,0,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,0,1,0,0,1,0],[0,0,0,1,1,0,0,0,0,1,0,0,0,1,0,1,1,0,0,1,0,0,0,0,0,1,0,0,0,1,0,1],[0,1,1,0,0,0,0,1,0,0,0,1,0,0,1,0,0,1,0,0,0,1,0,0,0,0,1,0,1,0,0,0]];const W=8,H=4,f=[];for(const p of ps){const g=makeGrid(H,W);for(let r=0;r<H;r++)for(let c=0;c<W;c++)g[r][c]=!!p[r*W+c];f.push(gridToBraille(g))}return f}
-function genCascade(){const W=8,H=4,f=[];for(let o=-2;o<W+H;o++){const g=makeGrid(H,W);for(let r=0;r<H;r++)for(let c=0;c<W;c++)if(c+r===o||c+r===o-1)g[r][c]=true;f.push(gridToBraille(g))}return f}
-function genColumns(){const W=6,H=4,f=[];for(let col=0;col<W;col++)for(let ft=H-1;ft>=0;ft--){const g=makeGrid(H,W);for(let pc=0;pc<col;pc++)for(let r=0;r<H;r++)g[r][pc]=true;for(let r=ft;r<H;r++)g[r][col]=true;f.push(gridToBraille(g))}const full=makeGrid(H,W);for(let r=0;r<H;r++)for(let c=0;c<W;c++)full[r][c]=true;f.push(gridToBraille(full));f.push(gridToBraille(makeGrid(H,W)));return f}
-function genOrbit(){const W=2,H=4,path=[[0,0],[0,1],[1,1],[2,1],[3,1],[3,0],[2,0],[1,0]],f=[];for(let i=0;i<path.length;i++){const g=makeGrid(H,W);g[path[i][0]][path[i][1]]=true;const t=(i-1+path.length)%path.length;g[path[t][0]][path[t][1]]=true;f.push(gridToBraille(g))}return f}
-function genBreathe(){const stages=[[],[[1,0]],[[0,1],[2,0]],[[0,0],[1,1],[3,0]],[[0,0],[1,1],[2,0],[3,1]],[[0,0],[0,1],[1,1],[2,0],[3,1]],[[0,0],[0,1],[1,0],[2,1],[3,0],[3,1]],[[0,0],[0,1],[1,0],[1,1],[2,0],[3,0],[3,1]],[[0,0],[0,1],[1,0],[1,1],[2,0],[2,1],[3,0],[3,1]]];const seq=[...stages,...stages.slice().reverse().slice(1)],f=[];for(const dots of seq){const g=makeGrid(4,2);for(const[r,c]of dots)g[r][c]=true;f.push(gridToBraille(g))}return f}
-function genWaveRows(){const W=8,H=4,n=16,f=[];for(let i=0;i<n;i++){const g=makeGrid(H,W);for(let c=0;c<W;c++){const row=Math.round((Math.sin((i-c*0.5)*0.8)+1)/2*(H-1));g[row][c]=true;if(row>0)g[row-1][c]=(i+c)%3===0}f.push(gridToBraille(g))}return f}
-function genCheckerboard(){const W=6,H=4,f=[];for(let p=0;p<4;p++){const g=makeGrid(H,W);for(let r=0;r<H;r++)for(let c=0;c<W;c++)g[r][c]=p<2?(r+c+p)%2===0:(r+c+p)%3===0;f.push(gridToBraille(g))}return f}
-function genHelix(){const W=8,H=4,n=16,f=[];for(let i=0;i<n;i++){const g=makeGrid(H,W);for(let c=0;c<W;c++){const ph=(i+c)*(Math.PI/4);g[Math.round((Math.sin(ph)+1)/2*(H-1))][c]=true;g[Math.round((Math.sin(ph+Math.PI)+1)/2*(H-1))][c]=true}f.push(gridToBraille(g))}return f}
-function genFillSweep(){const W=4,H=4,f=[];for(let row=H-1;row>=0;row--){const g=makeGrid(H,W);for(let r=row;r<H;r++)for(let c=0;c<W;c++)g[r][c]=true;f.push(gridToBraille(g))}const full=makeGrid(H,W);for(let r=0;r<H;r++)for(let c=0;c<W;c++)full[r][c]=true;f.push(gridToBraille(full));f.push(gridToBraille(full));for(let row=0;row<H;row++){const g=makeGrid(H,W);for(let r=row+1;r<H;r++)for(let c=0;c<W;c++)g[r][c]=true;f.push(gridToBraille(g))}f.push(gridToBraille(makeGrid(H,W)));return f}
-function genDiagSwipe(){const W=4,H=4,f=[],mx=W+H-2;for(let d=0;d<=mx;d++){const g=makeGrid(H,W);for(let r=0;r<H;r++)for(let c=0;c<W;c++)if(r+c<=d)g[r][c]=true;f.push(gridToBraille(g))}const full=makeGrid(H,W);for(let r=0;r<H;r++)for(let c=0;c<W;c++)full[r][c]=true;f.push(gridToBraille(full));for(let d=0;d<=mx;d++){const g=makeGrid(H,W);for(let r=0;r<H;r++)for(let c=0;c<W;c++)if(r+c>d)g[r][c]=true;f.push(gridToBraille(g))}f.push(gridToBraille(makeGrid(H,W)));return f}
-
-const spinners = {
-  braille:{frames:['⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏'],interval:80},
-  braillewave:{frames:['⠁⠂⠄⡀','⠂⠄⡀⢀','⠄⡀⢀⠠','⡀⢀⠠⠐','⢀⠠⠐⠈','⠠⠐⠈⠁','⠐⠈⠁⠂','⠈⠁⠂⠄'],interval:100},
-  dna:{frames:['⠋⠉⠙⠚','⠉⠙⠚⠒','⠙⠚⠒⠂','⠚⠒⠂⠂','⠒⠂⠂⠒','⠂⠂⠒⠲','⠂⠒⠲⠴','⠒⠲⠴⠤','⠲⠴⠤⠄','⠴⠤⠄⠋','⠤⠄⠋⠉','⠄⠋⠉⠙'],interval:80},
-  scan:{frames:genScan(),interval:70},
-  rain:{frames:genRain(),interval:100},
-  scanline:{frames:genScanLine(),interval:120},
-  pulse:{frames:genPulse(),interval:180},
-  snake:{frames:genSnake(),interval:80},
-  sparkle:{frames:genSparkle(),interval:150},
-  cascade:{frames:genCascade(),interval:60},
-  columns:{frames:genColumns(),interval:60},
-  orbit:{frames:genOrbit(),interval:100},
-  breathe:{frames:genBreathe(),interval:100},
-  waverows:{frames:genWaveRows(),interval:90},
-  checkerboard:{frames:genCheckerboard(),interval:250},
-  helix:{frames:genHelix(),interval:80},
-  fillsweep:{frames:genFillSweep(),interval:100},
-  diagswipe:{frames:genDiagSwipe(),interval:60},
-};
+// Filter to braille spinners only (exclude classic unicode)
+const nonBraille = new Set(['arc', 'halfmoon', 'line', 'blocks']);
+const spinners = Object.fromEntries(
+  Object.entries(UnicodeAnimations.spinners).filter(([name]) => !nonBraille.has(name))
+);
 
 // Build grid
 const grid = document.getElementById('spinnerGrid');

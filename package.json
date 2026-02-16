@@ -5,12 +5,24 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
-      "require": { "types": "./dist/index.d.cts", "default": "./dist/index.cjs" }
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./braille": {
-      "import": { "types": "./dist/braille.d.ts", "default": "./dist/braille.js" },
-      "require": { "types": "./dist/braille.d.cts", "default": "./dist/braille.cjs" }
+      "import": {
+        "types": "./dist/braille.d.ts",
+        "default": "./dist/braille.js"
+      },
+      "require": {
+        "types": "./dist/braille.d.cts",
+        "default": "./dist/braille.cjs"
+      }
     }
   },
   "bin": {
@@ -19,10 +31,14 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist", "scripts"],
+  "files": [
+    "dist",
+    "scripts"
+  ],
   "sideEffects": false,
   "scripts": {
     "build": "tsup",
+    "test": "vitest run",
     "postinstall": "node scripts/postinstall.cjs",
     "prepublishOnly": "npm run build"
   },
@@ -31,10 +47,19 @@
     "url": "git+https://github.com/gunnargray-dev/unicode-animations.git"
   },
   "homepage": "https://github.com/gunnargray-dev/unicode-animations",
-  "keywords": ["braille", "spinner", "unicode", "animation", "loading", "cli", "terminal"],
+  "keywords": [
+    "braille",
+    "spinner",
+    "unicode",
+    "animation",
+    "loading",
+    "cli",
+    "terminal"
+  ],
   "license": "MIT",
   "devDependencies": {
     "tsup": "^8.4.0",
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
   }
 }

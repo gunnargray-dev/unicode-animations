@@ -64,6 +64,7 @@ export function gridToBraille(grid: boolean[][]): string {
 
 /** Create an empty grid of given dimensions */
 export function makeGrid(rows: number, cols: number): boolean[][] {
+  if (rows <= 0 || cols <= 0) return [];
   return Array.from({ length: rows }, () => Array(cols).fill(false));
 }
 
