@@ -51,6 +51,7 @@ try {
   }
 
   function pad(str, n) { return str + ' '.repeat(Math.max(0, n - str.length)); }
+  function padBraille(str, n) { return str + '\u2800'.repeat(Math.max(0, n - str.length)); }
 
   // ─── Title (box-drawing art) ───
   const titleLines = [
@@ -112,7 +113,7 @@ try {
         const name = row[c];
         const sp = S[name];
         const frame = sp.frames[tick % sp.frames.length];
-        line += B + pad(frame, colFPad[c]) + R + ' ' + D + pad(name, NPAD) + R;
+        line += B + padBraille(frame, colFPad[c]) + R + ' ' + D + pad(name, NPAD) + R;
         if (c < 2) line += '  ';
       }
       buf += CL + line + '\n';
