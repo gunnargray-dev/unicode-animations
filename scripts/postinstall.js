@@ -1,9 +1,14 @@
 #!/usr/bin/env node
 
 // Postinstall animation — showcases a few spinners side-by-side for ~1.5s
-// Skips gracefully in non-TTY environments (CI, piped output)
+// Skips gracefully in CI or non-interactive environments
 
-if (!process.stdout.isTTY) process.exit(0);
+// npm 7+ pipes lifecycle script stdio, so isTTY is always false.
+// Use stderr (usually still connected to terminal) for the animation.
+// Skip in CI or when there's genuinely no terminal.
+const ci = process.env.CI || process.env.CONTINUOUS_INTEGRATION || process.env.GITHUB_ACTIONS;
+const out = process.stderr.isTTY ? process.stderr : process.stdout.isTTY ? process.stdout : null;
+if (ci || !out) process.exit(0);
 
 try {
   const DURATION = 1500;
@@ -25,9 +30,9 @@ try {
   const green = '\x1B[32m';
   const reset = '\x1B[0m';
 
-  process.stdout.write(hide);
+  out.write(hide);
 
-  const cleanup = () => process.stdout.write(show);
+  const cleanup = () => out.write(show);
   process.on('SIGINT', () => { cleanup(); process.exit(0); });
 
   let tick = 0;
@@ -37,13 +42,13 @@ try {
     if (Date.now() - start >= DURATION) {
       clearInterval(timer);
       const done = `${clearLine}  ${green}${bold}✔${reset} ${bold}unicode-animations${reset} — 22 spinners ready\n`;
-      process.stdout.write(done);
+      out.write(done);
       cleanup();
       return;
     }
 
     const chars = spinners.map(s => s.frames[tick % s.frames.length]);
-    process.stdout.write(`${clearLine}  ${chars.join('  ')}`);
+    out.write(`${clearLine}  ${chars.join('  ')}`);
     tick++;
   }, INTERVAL);
 } catch {
