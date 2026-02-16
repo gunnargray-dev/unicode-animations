@@ -1,6 +1,6 @@
 {
   "name": "unicode-animations",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Unicode spinner animations as raw frame data",
   "type": "module",
   "exports": {
@@ -12,6 +12,9 @@
       "import": { "types": "./dist/braille.d.ts", "default": "./dist/braille.js" },
       "require": { "types": "./dist/braille.d.cts", "default": "./dist/braille.cjs" }
     }
+  },
+  "bin": {
+    "unicode-animations": "./scripts/demo.cjs"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
