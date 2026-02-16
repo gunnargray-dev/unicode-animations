@@ -42,7 +42,7 @@ try {
   const cleanup = () => { try { out.write(show); } catch {} };
   process.on('SIGINT', () => { cleanup(); process.exit(0); });
 
-  // Static header
+  // Header
   out.write(`
 ${b}${w}  ██╗   ██╗███╗   ██╗██╗ ██████╗ ██████╗ ██████╗ ███████╗${r}
 ${b}${w}  ██║   ██║████╗  ██║██║██╔════╝██╔═══██╗██╔══██╗██╔════╝${r}
@@ -54,38 +54,32 @@ ${b}${c}            a n i m a t i o n s${r}
 
 `);
 
-  // Two-column spinner grid
+  // Braille spinners only, 2 columns of 9
   const left = [
-    ['braille',    S.braille],
-    ['arc',        S.arc],
-    ['halfmoon',   S.halfmoon],
-    ['line',       S.line],
-    ['blocks',     S.blocks],
-    ['orbit',      S.orbit],
-    ['breathe',    S.breathe],
-    ['snake',      S.snake],
-    ['fillsweep',  S.fillsweep],
-    ['diagswipe',  S.diagswipe],
-    ['pulse',      S.pulse],
+    ['Braille',    S.braille],
+    ['Orbit',      S.orbit],
+    ['Breathe',    S.breathe],
+    ['Snake',      S.snake],
+    ['Fill Sweep', S.fillsweep],
+    ['Diag Swipe', S.diagswipe],
+    ['Pulse',      S.pulse],
+    ['Scanline',   S.scanline],
+    ['Columns',    S.columns],
   ];
 
   const right = [
-    ['scan',         S.scan],
-    ['rain',         S.rain],
-    ['scanline',     S.scanline],
-    ['sparkle',      S.sparkle],
-    ['cascade',      S.cascade],
-    ['columns',      S.columns],
-    ['waverows',     S.waverows],
-    ['checkerboard', S.checkerboard],
-    ['helix',        S.helix],
-    ['braillewave',  S.braillewave],
-    ['dna',          S.dna],
+    ['Checkerboard', S.checkerboard],
+    ['Scan',         S.scan],
+    ['Rain',         S.rain],
+    ['Sparkle',      S.sparkle],
+    ['Cascade',      S.cascade],
+    ['Wave Rows',    S.waverows],
+    ['Helix',        S.helix],
+    ['Braille Wave', S.braillewave],
+    ['DNA',          S.dna],
   ];
 
   const ROWS = left.length;
-  const LF = 3;   // left frame pad width
-  const RF = 12;   // right frame pad width
 
   function pad(str, n) { return str + ' '.repeat(Math.max(0, n - str.length)); }
 
@@ -96,7 +90,7 @@ ${b}${c}            a n i m a t i o n s${r}
       const [rn, rs] = right[i];
       const lf = ls.frames[tick % ls.frames.length];
       const rf = rs.frames[tick % rs.frames.length];
-      buf += `  ${m}${pad(lf, LF)}${r}  ${pad(ln, 12)}  ${m}${pad(rf, RF)}${r}  ${d}${rn}${r}\n`;
+      buf += `    ${m}${pad(lf, 3)}${r}  ${d}${pad(ln, 12)}${r}  ${m}${pad(rf, 12)}${r}  ${d}${rn}${r}\n`;
     }
     return buf;
   }
@@ -109,7 +103,7 @@ ${b}${c}            a n i m a t i o n s${r}
   const timer = setInterval(() => {
     if (Date.now() - start >= DURATION) {
       clearInterval(timer);
-      out.write(`\n  ${g}${b}✔${r} ${b}unicode-animations${r} ${d}— 22 spinners ready${r}\n\n`);
+      out.write(`\n  ${g}${b}✔${r} ${b}unicode-animations${r} ${d}— 18 braille spinners + 4 classics${r}\n\n`);
       cleanup();
       return;
     }
