@@ -1,6 +1,6 @@
 {
   "name": "unicode-animations",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Unicode spinner animations as raw frame data",
   "type": "module",
   "exports": {
@@ -16,12 +16,18 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": ["dist", "scripts"],
   "sideEffects": false,
   "scripts": {
     "build": "tsup",
+    "postinstall": "node scripts/postinstall.js",
     "prepublishOnly": "npm run build"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gunnargray-dev/unicode-animations.git"
+  },
+  "homepage": "https://github.com/gunnargray-dev/unicode-animations",
   "keywords": ["braille", "spinner", "unicode", "animation", "loading", "cli", "terminal"],
   "license": "MIT",
   "devDependencies": {
