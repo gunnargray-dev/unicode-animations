@@ -148,8 +148,8 @@ el.textContent = '✔ Synced';
 | Name | Preview | Interval |
 |------|---------|----------|
 | `braille` | `⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏` | 80ms |
-| `braillewave` | `⠁⠂⠄⡀⢀⠠⠐⠈` → `⠂⠄⡀⢀⠠⠐⠈⠁` | 100ms |
-| `dna` | `⠋⠉⠙⠚⠒⠂⠂⠒⠲⠴⠤⠄` → `⠙⠚⠒⠂⠂⠒⠲⠴⠤⠄⠄⠠` | 80ms |
+| `braillewave` | `⠁⠂⠄⡀` → `⠂⠄⡀⢀` | 100ms |
+| `dna` | `⠋⠉⠙⠚` → `⠉⠙⠚⠒` | 80ms |
 
 ### Grid animations (braille)
 

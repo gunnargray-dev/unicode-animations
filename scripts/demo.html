@@ -166,7 +166,7 @@
 
   <header>
     <h1>unicode-animations</h1>
-    <p>22 unicode spinner animations as raw frame data</p>
+    <p>18 braille spinner animations as raw frame data</p>
   </header>
 
   <div class="install">
@@ -175,7 +175,7 @@
 
   <main>
     <section>
-      <div class="section-label">All spinners</div>
+      <div class="section-label">All braille spinners</div>
       <div class="grid" id="spinnerGrid"></div>
     </section>
 
@@ -235,8 +235,8 @@ function genDiagSwipe(){const W=4,H=4,f=[],mx=W+H-2;for(let d=0;d<=mx;d++){const
 
 const spinners = {
   braille:{frames:['⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏'],interval:80},
-  braillewave:{frames:['⠁⠂⠄⡀⢀⠠⠐⠈','⠈⠁⠂⠄⡀⢀⠠⠐','⠐⠈⠁⠂⠄⡀⢀⠠','⠠⠐⠈⠁⠂⠄⡀⢀','⢀⠠⠐⠈⠁⠂⠄⡀','⡀⢀⠠⠐⠈⠁⠂⠄','⠄⡀⢀⠠⠐⠈⠁⠂','⠂⠄⡀⢀⠠⠐⠈⠁'],interval:100},
-  dna:{frames:['⠋⠉⠙⠚⠒⠂⠂⠒⠲⠴⠤⠄','⠙⠚⠒⠂⠂⠒⠲⠴⠤⠄⠄⠠','⠹⠒⠂⠂⠒⠲⠴⠤⠄⠄⠠⠠','⠸⠂⠂⠒⠲⠴⠤⠄⠄⠠⠠⠄','⠼⠂⠒⠲⠴⠤⠄⠄⠠⠠⠄⠤','⠴⠒⠲⠴⠤⠄⠄⠠⠠⠄⠤⠴','⠦⠲⠴⠤⠄⠄⠠⠠⠄⠤⠴⠲','⠧⠴⠤⠄⠄⠠⠠⠄⠤⠴⠲⠒','⠇⠤⠄⠄⠠⠠⠄⠤⠴⠲⠒⠂','⠏⠄⠄⠠⠠⠄⠤⠴⠲⠒⠂⠂','⠋⠄⠠⠠⠄⠤⠴⠲⠒⠂⠂⠒','⠉⠠⠠⠄⠤⠴⠲⠒⠂⠂⠒⠲'],interval:80},
+  braillewave:{frames:['⠁⠂⠄⡀','⠂⠄⡀⢀','⠄⡀⢀⠠','⡀⢀⠠⠐','⢀⠠⠐⠈','⠠⠐⠈⠁','⠐⠈⠁⠂','⠈⠁⠂⠄'],interval:100},
+  dna:{frames:['⠋⠉⠙⠚','⠉⠙⠚⠒','⠙⠚⠒⠂','⠚⠒⠂⠂','⠒⠂⠂⠒','⠂⠂⠒⠲','⠂⠒⠲⠴','⠒⠲⠴⠤','⠲⠴⠤⠄','⠴⠤⠄⠋','⠤⠄⠋⠉','⠄⠋⠉⠙'],interval:80},
   scan:{frames:genScan(),interval:70},
   rain:{frames:genRain(),interval:100},
   scanline:{frames:genScanLine(),interval:120},
@@ -252,10 +252,6 @@ const spinners = {
   helix:{frames:genHelix(),interval:80},
   fillsweep:{frames:genFillSweep(),interval:100},
   diagswipe:{frames:genDiagSwipe(),interval:60},
-  arc:{frames:['◜','◠','◝','◞','◡','◟'],interval:100},
-  halfmoon:{frames:['◐','◓','◑','◒'],interval:180},
-  line:{frames:['|','/','—','\\'],interval:100},
-  blocks:{frames:['▁','▂','▃','▄','▅','▆','▇','█','▇','▆','▅','▄','▃','▂'],interval:100},
 };
 
 // Build grid
