@@ -1,6 +1,6 @@
 {
   "name": "unicode-animations",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Unicode spinner animations as raw frame data",
   "type": "module",
   "exports": {
@@ -20,7 +20,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsup",
-    "postinstall": "node scripts/postinstall.js",
+    "postinstall": "node scripts/postinstall.cjs",
     "prepublishOnly": "npm run build"
   },
   "repository": {
