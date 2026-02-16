@@ -36,6 +36,7 @@ try {
   const R = '\x1B[0m';
   const HIDE = '\x1B[?25l';
   const SHOW = '\x1B[?25h';
+  const CL = '\x1B[2K';
 
   out.write(HIDE);
   const cleanup = () => { try { out.write(SHOW); } catch {} };
@@ -114,21 +115,21 @@ try {
         line += B + pad(frame, colFPad[c]) + R + ' ' + D + pad(name, NPAD) + R;
         if (c < 2) line += '  ';
       }
-      buf += line + '\n';
+      buf += CL + line + '\n';
     }
     return buf;
   }
 
   // ─── Print static top ───
   let top = '\n';
-  top += topCrop + '\n';
-  top += '\n';
+  top += CL + topCrop + '\n';
+  top += CL + '\n';
   for (let i = 0; i < titleLines.length; i++) {
     const style = i === titleLines.length - 1 ? D : B;
-    top += contentPad + style + titleLines[i] + R + '\n';
+    top += CL + contentPad + style + titleLines[i] + R + '\n';
   }
-  top += contentPad + D + 'BRAILLE ANIMATIONS' + R + '\n';
-  top += '\n';
+  top += CL + contentPad + D + 'BRAILLE ANIMATIONS' + R + '\n';
+  top += CL + '\n';
   out.write(top);
 
   // ─── Print first frame of spinners ───
@@ -142,7 +143,7 @@ try {
     if (Date.now() - start >= DURATION) {
       clearInterval(timer);
       // Print static bottom
-      let bot = '\n';
+      let bot = CL + '\n';
       const cmds = [
         ['npx unicode-animations',        'demo all spinners'],
         ['npx unicode-animations --list',  'list all spinners'],
@@ -150,10 +151,10 @@ try {
       ];
       for (const [left, right] of cmds) {
         const gap = ' '.repeat(Math.max(2, contentW - left.length - right.length));
-        bot += contentPad + D + left + R + gap + D + right + R + '\n';
+        bot += CL + contentPad + D + left + R + gap + D + right + R + '\n';
       }
-      bot += '\n';
-      bot += botCrop + '\n\n';
+      bot += CL + '\n';
+      bot += CL + botCrop + '\n\n';
       out.write(bot);
       cleanup();
       return;

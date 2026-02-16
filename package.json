@@ -1,6 +1,6 @@
 {
   "name": "unicode-animations",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Unicode spinner animations as raw frame data",
   "type": "module",
   "exports": {
@@ -61,5 +61,8 @@
     "tsup": "^8.4.0",
     "typescript": "^5.7.0",
     "vitest": "^3.0.0"
+  },
+  "dependencies": {
+    "unicode-animations": "^1.0.0"
   }
 }
