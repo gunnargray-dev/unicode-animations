@@ -2,14 +2,15 @@
 
 Unicode spinner animations as raw frame data — no dependencies, works everywhere.
 
-## Preview
+## Demo
 
-```
-braille   ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏
-arc       ◜ ◠ ◝ ◞ ◡ ◟
-halfmoon  ◐ ◓ ◑ ◒
-blocks    ▁ ▂ ▃ ▄ ▅ ▆ ▇ █ ▇ ▆ ▅ ▄ ▃ ▂
-line      | / — \
+See all 22 spinners animating live:
+
+```bash
+npx unicode-animations --web     # open browser demo
+npx unicode-animations           # cycle through all in terminal
+npx unicode-animations helix     # preview a specific spinner
+npx unicode-animations --list    # list all spinners
 ```
 
 ## Install
@@ -32,7 +33,7 @@ Each spinner is a `{ frames: string[], interval: number }` object.
 
 ## Examples
 
-### Spinner while awaiting an async task
+### CLI tool — spinner during async work
 
 ```js
 import spinners from 'unicode-animations';
@@ -41,93 +42,61 @@ const { frames, interval } = spinners.braille;
 let i = 0;
 
 const spinner = setInterval(() => {
-  process.stdout.write(`\r  ${frames[i++ % frames.length]} Installing dependencies...`);
+  process.stdout.write(`\r\x1B[2K  ${frames[i++ % frames.length]} Deploying to production...`);
 }, interval);
 
-await install();
+await deploy();
 
 clearInterval(spinner);
-process.stdout.write('\r  ✔ Installed successfully.\n');
+process.stdout.write('\r\x1B[2K  ✔ Deployed.\n');
 ```
 
-### Multi-character braille spinner
-
-The grid-based spinners produce wider animated patterns — useful for visual flair in CLI tools:
+### Reusable spinner helper
 
 ```js
 import spinners from 'unicode-animations';
 
-const { frames, interval } = spinners.helix;
-let i = 0;
-
-const spinner = setInterval(() => {
-  process.stdout.write(`\r  ${frames[i++ % frames.length]}  Building...`);
-}, interval);
-```
-
-### Progress indicator with dynamic message
-
-```js
-import spinners from 'unicode-animations';
-
-function withSpinner(message, spinner = spinners.braille) {
-  let i = 0;
-  const { frames, interval } = spinner;
+function createSpinner(msg, name = 'braille') {
+  const { frames, interval } = spinners[name];
+  let i = 0, text = msg;
   const timer = setInterval(() => {
-    process.stdout.write(`\r\x1B[2K  ${frames[i++ % frames.length]} ${message}`);
+    process.stdout.write(`\r\x1B[2K  ${frames[i++ % frames.length]} ${text}`);
   }, interval);
 
   return {
-    update(msg) { message = msg; },
-    stop(finalMsg) {
-      clearInterval(timer);
-      process.stdout.write(`\r\x1B[2K  ✔ ${finalMsg}\n`);
-    },
+    update(msg) { text = msg; },
+    stop(msg) { clearInterval(timer); process.stdout.write(`\r\x1B[2K  ✔ ${msg}\n`); },
   };
 }
 
-const spin = withSpinner('Fetching data...');
-const data = await fetchData();
-spin.update(`Processing ${data.length} records...`);
-await processData(data);
-spin.stop('Done.');
+const s = createSpinner('Connecting to database...');
+const db = await connect();
+s.update(`Running ${migrations.length} migrations...`);
+await db.migrate(migrations);
+s.stop('Database ready.');
 ```
 
-### Cycle through different spinners
+### Multi-step pipeline
 
 ```js
 import spinners from 'unicode-animations';
 
-const names = ['scan', 'rain', 'helix', 'cascade'];
-let current = 0;
-let i = 0;
-
-setInterval(() => {
-  const s = spinners[names[current]];
-  process.stdout.write(`\r\x1B[2K  ${s.frames[i % s.frames.length]}  ${names[current]}`);
-  i++;
-  if (i % 20 === 0) current = (current + 1) % names.length;
-}, 80);
-```
-
-### Browser — inline loading text
-
-```js
-import spinners from 'unicode-animations';
-
-const el = document.getElementById('status');
-const { frames, interval } = spinners.arc;
-let i = 0;
-
-const spinner = setInterval(() => {
-  el.textContent = `${frames[i++ % frames.length]} Loading...`;
-}, interval);
-
-// Stop when done
-function onLoaded() {
-  clearInterval(spinner);
-  el.textContent = '✔ Ready';
+async function runWithSpinner(label, fn, name = 'braille') {
+  const { frames, interval } = spinners[name];
+  let i = 0;
+  const timer = setInterval(() => {
+    process.stdout.write(`\r\x1B[2K  ${frames[i++ % frames.length]} ${label}`);
+  }, interval);
+  const result = await fn();
+  clearInterval(timer);
+  process.stdout.write(`\r\x1B[2K  ✔ ${label}\n`);
+  return result;
 }
+
+await runWithSpinner('Linting...', lint, 'scan');
+await runWithSpinner('Running tests...', test, 'helix');
+await runWithSpinner('Building...', build, 'cascade');
+await runWithSpinner('Publishing...', publish, 'braille');
 ```
 
 ### React component
@@ -136,19 +105,40 @@ function onLoaded() {
 import { useState, useEffect } from 'react';
 import spinners from 'unicode-animations';
 
-function Spinner({ name = 'braille', text = 'Loading...' }) {
+function Spinner({ name = 'braille', children }) {
   const [frame, setFrame] = useState(0);
-  const spinner = spinners[name];
+  const s = spinners[name];
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setFrame(f => (f + 1) % spinner.frames.length);
-    }, spinner.interval);
+    const timer = setInterval(
+      () => setFrame(f => (f + 1) % s.frames.length),
+      s.interval
+    );
     return () => clearInterval(timer);
   }, [name]);
 
-  return <span>{spinner.frames[frame]} {text}</span>;
+  return <span style={{ fontFamily: 'monospace' }}>{s.frames[frame]} {children}</span>;
 }
+
+// Usage: <Spinner name="helix">Generating response...</Spinner>
+```
+
+### Browser — status indicator
+
+```js
+import spinners from 'unicode-animations';
+
+const el = document.getElementById('status');
+const { frames, interval } = spinners.orbit;
+let i = 0;
+
+const spinner = setInterval(() => {
+  el.textContent = `${frames[i++ % frames.length]} Syncing...`;
+}, interval);
+
+await sync();
+clearInterval(spinner);
+el.textContent = '✔ Synced';
 ```
 
 ## All spinners

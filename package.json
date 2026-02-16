@@ -1,6 +1,6 @@
 {
   "name": "unicode-animations",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "description": "Unicode spinner animations as raw frame data",
   "type": "module",
   "exports": {

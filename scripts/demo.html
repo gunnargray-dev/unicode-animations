@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>unicode-animations</title>
+  <style>
+    :root {
+      --bg: #131316;
+      --surface: #1e1e23;
+      --border: #2e2e36;
+      --text: #d8d8df;
+      --text-2: #a4a4b0;
+      --text-3: #6e6e80;
+      --accent: #a78bfa;
+      --mono: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Menlo', monospace;
+      --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    [data-theme="light"] {
+      --bg: #f7f7fa;
+      --surface: #ffffff;
+      --border: #e8e8ec;
+      --text: #2c2c3a;
+      --text-2: #6b6b7b;
+      --text-3: #9d9daa;
+      --accent: #7c3aed;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .theme-toggle {
+      position: fixed; top: 1rem; right: 1.5rem; z-index: 100;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.4rem 0.75rem;
+      cursor: pointer; font-size: 0.75rem; font-weight: 500;
+      color: var(--text-2); display: flex; align-items: center; gap: 0.4rem;
+      transition: border-color 0.2s;
+    }
+    .theme-toggle:hover { border-color: var(--text-2); }
+
+    header {
+      text-align: center;
+      padding: 4rem 2rem 1rem;
+    }
+    header h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+    header p {
+      margin-top: 0.4rem;
+      color: var(--text-3);
+      font-size: 0.95rem;
+    }
+
+    .install {
+      text-align: center;
+      margin: 1.5rem 0 3rem;
+    }
+    .install code {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.5rem 1.25rem;
+      color: var(--text-2);
+    }
+
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 1.5rem 6rem;
+    }
+
+    .section-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-3);
+      margin-bottom: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+    @media (max-width: 520px) { .grid { grid-template-columns: 1fr; } }
+
+    .spinner-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .spinner-row:hover { background: var(--surface); }
+
+    .spinner-frame {
+      font-family: var(--mono);
+      font-size: 1rem;
+      width: 5rem;
+      text-align: center;
+      flex-shrink: 0;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    .spinner-name {
+      font-weight: 500;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    .spinner-meta {
+      font-size: 0.75rem;
+      color: var(--text-3);
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    .usage {
+      margin-top: 3rem;
+    }
+    .usage pre {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      line-height: 1.6;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      overflow-x: auto;
+      color: var(--text-2);
+    }
+    .usage pre .kw { color: #c084fc; }
+    .usage pre .str { color: #86efac; }
+    .usage pre .cm { color: var(--text-3); }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.75rem;
+      color: var(--text-3);
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <button class="theme-toggle" id="toggle">
+    <span id="toggleIcon">☀</span>
+    <span id="toggleLabel">Light</span>
+  </button>
+
+  <header>
+    <h1>unicode-animations</h1>
+    <p>22 unicode spinner animations as raw frame data</p>
+  </header>
+
+  <div class="install">
+    <code>npm install unicode-animations</code>
+  </div>
+
+  <main>
+    <section>
+      <div class="section-label">All spinners</div>
+      <div class="grid" id="spinnerGrid"></div>
+    </section>
+
+    <section class="usage">
+      <div class="section-label" style="margin-bottom: 1rem;">Usage</div>
+      <pre><span class="kw">import</span> spinners <span class="kw">from</span> <span class="str">'unicode-animations'</span>
+
+<span class="kw">const</span> { frames, interval } = spinners.braille
+<span class="kw">let</span> i = 0
+
+<span class="kw">const</span> timer = setInterval(() => {
+  process.stdout.write(<span class="str">`\r${frames[i++ % frames.length]} Loading...`</span>)
+}, interval)
+
+<span class="kw">await</span> doWork()
+clearInterval(timer)
+process.stdout.write(<span class="str">'\r✔ Done.\n'</span>)</pre>
+    </section>
+  </main>
+
+  <footer>
+    <a href="https://github.com/gunnargray-dev/unicode-animations">GitHub</a>
+    &nbsp;·&nbsp; MIT License
+  </footer>
+
+<script>
+// Spinner data (inlined from the package)
+const BRAILLE_DOT_MAP = [[0x01,0x08],[0x02,0x10],[0x04,0x20],[0x40,0x80]];
+function gridToBraille(grid) {
+  const rows = grid.length, cols = grid[0]?.length || 0, cc = Math.ceil(cols / 2);
+  let r = '';
+  for (let c = 0; c < cc; c++) {
+    let code = 0x2800;
+    for (let ri = 0; ri < 4 && ri < rows; ri++)
+      for (let d = 0; d < 2; d++) { const col = c*2+d; if (col < cols && grid[ri]?.[col]) code |= BRAILLE_DOT_MAP[ri][d]; }
+    r += String.fromCodePoint(code);
+  }
+  return r;
+}
+function makeGrid(r,c) { return Array.from({length:r},()=>Array(c).fill(false)); }
+
+function genScan(){const W=8,H=4,f=[];for(let p=-1;p<W+1;p++){const g=makeGrid(H,W);for(let r=0;r<H;r++)for(let c=0;c<W;c++)if(c===p||c===p-1)g[r][c]=true;f.push(gridToBraille(g))}return f}
+function genRain(){const W=8,H=4,n=12,f=[],o=[0,3,1,5,2,7,4,6];for(let i=0;i<n;i++){const g=makeGrid(H,W);for(let c=0;c<W;c++){const r=(i+o[c])%(H+2);if(r<H)g[r][c]=true}f.push(gridToBraille(g))}return f}
+function genScanLine(){const W=6,H=4,f=[],p=[0,1,2,3,2,1];for(const row of p){const g=makeGrid(H,W);for(let c=0;c<W;c++){g[row][c]=true;if(row>0)g[row-1][c]=(c%2===0)}f.push(gridToBraille(g))}return f}
+function genPulse(){const W=6,H=4,f=[],cx=W/2-0.5,cy=H/2-0.5;for(const r of[0.5,1.2,2,3,3.5]){const g=makeGrid(H,W);for(let row=0;row<H;row++)for(let col=0;col<W;col++)if(Math.abs(Math.sqrt((col-cx)**2+(row-cy)**2)-r)<0.9)g[row][col]=true;f.push(gridToBraille(g))}return f}
+function genSnake(){const W=4,H=4,path=[];for(let r=0;r<H;r++)if(r%2===0)for(let c=0;c<W;c++)path.push([r,c]);else for(let c=W-1;c>=0;c--)path.push([r,c]);const f=[];for(let i=0;i<path.length;i++){const g=makeGrid(H,W);for(let t=0;t<4;t++){const idx=(i-t+path.length)%path.length;g[path[idx][0]][path[idx][1]]=true}f.push(gridToBraille(g))}return f}
+function genSparkle(){const ps=[[1,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0,1,1,0,0,0,0,1,0,0],[0,1,0,0,1,0,0,1,1,0,0,1,0,0,0,1,0,0,0,1,0,1,0,0,0,0,1,0,1,0,1,0],[0,0,1,0,0,1,0,0,0,1,0,0,0,0,1,0,1,0,1,0,0,0,0,1,0,1,0,1,0,0,0,1],[1,0,0,0,0,0,1,1,0,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,0,1,0,0,1,0],[0,0,0,1,1,0,0,0,0,1,0,0,0,1,0,1,1,0,0,1,0,0,0,0,0,1,0,0,0,1,0,1],[0,1,1,0,0,0,0,1,0,0,0,1,0,0,1,0,0,1,0,0,0,1,0,0,0,0,1,0,1,0,0,0]];const W=8,H=4,f=[];for(const p of ps){const g=makeGrid(H,W);for(let r=0;r<H;r++)for(let c=0;c<W;c++)g[r][c]=!!p[r*W+c];f.push(gridToBraille(g))}return f}
+function genCascade(){const W=8,H=4,f=[];for(let o=-2;o<W+H;o++){const g=makeGrid(H,W);for(let r=0;r<H;r++)for(let c=0;c<W;c++)if(c+r===o||c+r===o-1)g[r][c]=true;f.push(gridToBraille(g))}return f}
+function genColumns(){const W=6,H=4,f=[];for(let col=0;col<W;col++)for(let ft=H-1;ft>=0;ft--){const g=makeGrid(H,W);for(let pc=0;pc<col;pc++)for(let r=0;r<H;r++)g[r][pc]=true;for(let r=ft;r<H;r++)g[r][col]=true;f.push(gridToBraille(g))}const full=makeGrid(H,W);for(let r=0;r<H;r++)for(let c=0;c<W;c++)full[r][c]=true;f.push(gridToBraille(full));f.push(gridToBraille(makeGrid(H,W)));return f}
+function genOrbit(){const W=2,H=4,path=[[0,0],[0,1],[1,1],[2,1],[3,1],[3,0],[2,0],[1,0]],f=[];for(let i=0;i<path.length;i++){const g=makeGrid(H,W);g[path[i][0]][path[i][1]]=true;const t=(i-1+path.length)%path.length;g[path[t][0]][path[t][1]]=true;f.push(gridToBraille(g))}return f}
+function genBreathe(){const stages=[[],[[1,0]],[[0,1],[2,0]],[[0,0],[1,1],[3,0]],[[0,0],[1,1],[2,0],[3,1]],[[0,0],[0,1],[1,1],[2,0],[3,1]],[[0,0],[0,1],[1,0],[2,1],[3,0],[3,1]],[[0,0],[0,1],[1,0],[1,1],[2,0],[3,0],[3,1]],[[0,0],[0,1],[1,0],[1,1],[2,0],[2,1],[3,0],[3,1]]];const seq=[...stages,...stages.slice().reverse().slice(1)],f=[];for(const dots of seq){const g=makeGrid(4,2);for(const[r,c]of dots)g[r][c]=true;f.push(gridToBraille(g))}return f}
+function genWaveRows(){const W=8,H=4,n=16,f=[];for(let i=0;i<n;i++){const g=makeGrid(H,W);for(let c=0;c<W;c++){const row=Math.round((Math.sin((i-c*0.5)*0.8)+1)/2*(H-1));g[row][c]=true;if(row>0)g[row-1][c]=(i+c)%3===0}f.push(gridToBraille(g))}return f}
+function genCheckerboard(){const W=6,H=4,f=[];for(let p=0;p<4;p++){const g=makeGrid(H,W);for(let r=0;r<H;r++)for(let c=0;c<W;c++)g[r][c]=p<2?(r+c+p)%2===0:(r+c+p)%3===0;f.push(gridToBraille(g))}return f}
+function genHelix(){const W=8,H=4,n=16,f=[];for(let i=0;i<n;i++){const g=makeGrid(H,W);for(let c=0;c<W;c++){const ph=(i+c)*(Math.PI/4);g[Math.round((Math.sin(ph)+1)/2*(H-1))][c]=true;g[Math.round((Math.sin(ph+Math.PI)+1)/2*(H-1))][c]=true}f.push(gridToBraille(g))}return f}
+function genFillSweep(){const W=4,H=4,f=[];for(let row=H-1;row>=0;row--){const g=makeGrid(H,W);for(let r=row;r<H;r++)for(let c=0;c<W;c++)g[r][c]=true;f.push(gridToBraille(g))}const full=makeGrid(H,W);for(let r=0;r<H;r++)for(let c=0;c<W;c++)full[r][c]=true;f.push(gridToBraille(full));f.push(gridToBraille(full));for(let row=0;row<H;row++){const g=makeGrid(H,W);for(let r=row+1;r<H;r++)for(let c=0;c<W;c++)g[r][c]=true;f.push(gridToBraille(g))}f.push(gridToBraille(makeGrid(H,W)));return f}
+function genDiagSwipe(){const W=4,H=4,f=[],mx=W+H-2;for(let d=0;d<=mx;d++){const g=makeGrid(H,W);for(let r=0;r<H;r++)for(let c=0;c<W;c++)if(r+c<=d)g[r][c]=true;f.push(gridToBraille(g))}const full=makeGrid(H,W);for(let r=0;r<H;r++)for(let c=0;c<W;c++)full[r][c]=true;f.push(gridToBraille(full));for(let d=0;d<=mx;d++){const g=makeGrid(H,W);for(let r=0;r<H;r++)for(let c=0;c<W;c++)if(r+c>d)g[r][c]=true;f.push(gridToBraille(g))}f.push(gridToBraille(makeGrid(H,W)));return f}
+
+const spinners = {
+  braille:{frames:['⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏'],interval:80},
+  braillewave:{frames:['⠁⠂⠄⡀⢀⠠⠐⠈','⠈⠁⠂⠄⡀⢀⠠⠐','⠐⠈⠁⠂⠄⡀⢀⠠','⠠⠐⠈⠁⠂⠄⡀⢀','⢀⠠⠐⠈⠁⠂⠄⡀','⡀⢀⠠⠐⠈⠁⠂⠄','⠄⡀⢀⠠⠐⠈⠁⠂','⠂⠄⡀⢀⠠⠐⠈⠁'],interval:100},
+  dna:{frames:['⠋⠉⠙⠚⠒⠂⠂⠒⠲⠴⠤⠄','⠙⠚⠒⠂⠂⠒⠲⠴⠤⠄⠄⠠','⠹⠒⠂⠂⠒⠲⠴⠤⠄⠄⠠⠠','⠸⠂⠂⠒⠲⠴⠤⠄⠄⠠⠠⠄','⠼⠂⠒⠲⠴⠤⠄⠄⠠⠠⠄⠤','⠴⠒⠲⠴⠤⠄⠄⠠⠠⠄⠤⠴','⠦⠲⠴⠤⠄⠄⠠⠠⠄⠤⠴⠲','⠧⠴⠤⠄⠄⠠⠠⠄⠤⠴⠲⠒','⠇⠤⠄⠄⠠⠠⠄⠤⠴⠲⠒⠂','⠏⠄⠄⠠⠠⠄⠤⠴⠲⠒⠂⠂','⠋⠄⠠⠠⠄⠤⠴⠲⠒⠂⠂⠒','⠉⠠⠠⠄⠤⠴⠲⠒⠂⠂⠒⠲'],interval:80},
+  scan:{frames:genScan(),interval:70},
+  rain:{frames:genRain(),interval:100},
+  scanline:{frames:genScanLine(),interval:120},
+  pulse:{frames:genPulse(),interval:180},
+  snake:{frames:genSnake(),interval:80},
+  sparkle:{frames:genSparkle(),interval:150},
+  cascade:{frames:genCascade(),interval:60},
+  columns:{frames:genColumns(),interval:60},
+  orbit:{frames:genOrbit(),interval:100},
+  breathe:{frames:genBreathe(),interval:100},
+  waverows:{frames:genWaveRows(),interval:90},
+  checkerboard:{frames:genCheckerboard(),interval:250},
+  helix:{frames:genHelix(),interval:80},
+  fillsweep:{frames:genFillSweep(),interval:100},
+  diagswipe:{frames:genDiagSwipe(),interval:60},
+  arc:{frames:['◜','◠','◝','◞','◡','◟'],interval:100},
+  halfmoon:{frames:['◐','◓','◑','◒'],interval:180},
+  line:{frames:['|','/','—','\\'],interval:100},
+  blocks:{frames:['▁','▂','▃','▄','▅','▆','▇','█','▇','▆','▅','▄','▃','▂'],interval:100},
+};
+
+// Build grid
+const grid = document.getElementById('spinnerGrid');
+const els = {};
+
+Object.entries(spinners).forEach(([name, s]) => {
+  const row = document.createElement('div');
+  row.className = 'spinner-row';
+
+  const frame = document.createElement('span');
+  frame.className = 'spinner-frame';
+  frame.textContent = s.frames[0];
+
+  const label = document.createElement('span');
+  label.className = 'spinner-name';
+  label.textContent = name;
+
+  const meta = document.createElement('span');
+  meta.className = 'spinner-meta';
+  meta.textContent = `${s.frames.length}f · ${s.interval}ms`;
+
+  row.append(frame, label, meta);
+  grid.appendChild(row);
+  els[name] = frame;
+});
+
+// Animate — group by interval for efficiency
+const byInterval = {};
+Object.entries(spinners).forEach(([name, s]) => {
+  if (!byInterval[s.interval]) byInterval[s.interval] = [];
+  byInterval[s.interval].push({ name, frames: s.frames, i: 0 });
+});
+
+Object.entries(byInterval).forEach(([interval, group]) => {
+  setInterval(() => {
+    group.forEach(s => {
+      s.i = (s.i + 1) % s.frames.length;
+      els[s.name].textContent = s.frames[s.i];
+    });
+  }, Number(interval));
+});
+
+// Theme toggle
+const toggle = document.getElementById('toggle');
+const icon = document.getElementById('toggleIcon');
+const label = document.getElementById('toggleLabel');
+toggle.addEventListener('click', () => {
+  const dark = document.documentElement.dataset.theme === 'dark';
+  document.documentElement.dataset.theme = dark ? 'light' : 'dark';
+  icon.textContent = dark ? '☾' : '☀';
+  label.textContent = dark ? 'Dark' : 'Light';
+});
+</script>
+</body>
+</html>

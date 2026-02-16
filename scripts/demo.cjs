@@ -14,7 +14,17 @@ try {
 const names = Object.keys(S);
 const args = process.argv.slice(2);
 
-// Usage: npx unicode-animations [name]
+// --web: open browser demo
+if (args[0] === '--web' || args[0] === '-w') {
+  const { exec } = require('child_process');
+  const demoPath = path.join(__dirname, 'demo.html');
+  const cmd = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open';
+  exec(`${cmd} "${demoPath}"`);
+  console.log(`Opening ${demoPath}`);
+  process.exit(0);
+}
+
+// Usage: npx unicode-animations [name|--list|--web]
 // No args = cycle through all spinners
 // With name = show that specific spinner
 
