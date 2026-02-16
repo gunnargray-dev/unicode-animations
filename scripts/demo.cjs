@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
 const path = require('path');
+const fs = require('fs');
+const tty = require('tty');
 
 let S;
 try {
@@ -24,38 +26,45 @@ if (args[0] === '--web' || args[0] === '-w') {
   process.exit(0);
 }
 
-// Usage: npx unicode-animations [name|--list|--web]
-// No args = cycle through all spinners
-// With name = show that specific spinner
+// Get a writable TTY stream — stdout if it's a TTY, otherwise /dev/tty
+let out = process.stdout;
+if (!out.isTTY) {
+  try {
+    const fd = fs.openSync('/dev/tty', 'w');
+    out = new tty.WriteStream(fd);
+  } catch {
+    // Fallback: no TTY available, just list and exit
+    console.log('22 spinners: ' + names.join(', '));
+    process.exit(0);
+  }
+}
 
 const hide = '\x1B[?25l';
 const show = '\x1B[?25h';
-const clear = '\x1B[2K\r';
 const bold = '\x1B[1m';
 const dim = '\x1B[2m';
-const cyan = '\x1B[36m';
 const magenta = '\x1B[35m';
 const reset = '\x1B[0m';
 
-process.stdout.write(hide);
-const cleanup = () => process.stdout.write(show);
-process.on('SIGINT', () => { cleanup(); console.log(); process.exit(0); });
+out.write(hide);
+const cleanup = () => { try { out.write(show); } catch {} };
+process.on('SIGINT', () => { cleanup(); out.write('\n'); process.exit(0); });
 process.on('exit', cleanup);
 
 if (args[0] === '--list' || args[0] === '-l') {
   cleanup();
-  console.log(`\n${bold}22 spinners available:${reset}\n`);
+  out.write(`\n${bold}22 spinners available:${reset}\n\n`);
   for (const name of names) {
     const s = S[name];
-    console.log(`  ${magenta}${s.frames[0]}${reset}  ${name} ${dim}(${s.frames.length} frames, ${s.interval}ms)${reset}`);
+    out.write(`  ${magenta}${s.frames[0]}${reset}  ${name} ${dim}(${s.frames.length} frames, ${s.interval}ms)${reset}\n`);
   }
-  console.log();
+  out.write('\n');
   process.exit(0);
 }
 
 if (args[0] && !names.includes(args[0])) {
   cleanup();
-  console.error(`Unknown spinner: "${args[0]}"\nRun with --list to see all spinners.`);
+  out.write(`Unknown spinner: "${args[0]}"\nRun with --list to see all spinners.\n`);
   process.exit(1);
 }
 
@@ -64,15 +73,15 @@ const single = !!args[0];
 let i = 0;
 let ticksOnCurrent = 0;
 
-const TICKS_PER_SPINNER = 40; // ~3.2s per spinner when cycling
+const TICKS_PER_SPINNER = 40;
 
 const timer = setInterval(() => {
   const name = names[current];
   const s = S[name];
   const frame = s.frames[i % s.frames.length];
-  const count = `${dim}[${current + 1}/${names.length}]${reset}`;
+  const count = single ? '' : `${dim}[${current + 1}/${names.length}]${reset}`;
 
-  process.stdout.write(`${clear}  ${magenta}${frame}${reset}  ${bold}${name}${reset} ${dim}${s.interval}ms${reset}  ${single ? '' : count}`);
+  out.write(`\r\x1B[2K  ${magenta}${frame}${reset}  ${bold}${name}${reset} ${dim}${s.interval}ms${reset}  ${count}`);
 
   i++;
   ticksOnCurrent++;
