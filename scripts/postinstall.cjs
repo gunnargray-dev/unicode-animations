@@ -28,89 +28,127 @@ try {
   const DURATION = 3000;
   const INTERVAL = 80;
 
-  const d = '\x1B[2m';
-  const b = '\x1B[1m';
-  const r = '\x1B[0m';
-  const c = '\x1B[36m';
-  const g = '\x1B[32m';
-  const w = '\x1B[37m';
-  const m = '\x1B[35m';
-  const hide = '\x1B[?25l';
-  const show = '\x1B[?25h';
+  const B = '\x1B[1m';
+  const D = '\x1B[2m';
+  const R = '\x1B[0m';
+  const HIDE = '\x1B[?25l';
+  const SHOW = '\x1B[?25h';
 
-  out.write(hide);
-  const cleanup = () => { try { out.write(show); } catch {} };
+  out.write(HIDE);
+  const cleanup = () => { try { out.write(SHOW); } catch {} };
   process.on('SIGINT', () => { cleanup(); process.exit(0); });
 
-  // Header
-  out.write(`
-${b}${w}  ██╗   ██╗███╗   ██╗██╗ ██████╗ ██████╗ ██████╗ ███████╗${r}
-${b}${w}  ██║   ██║████╗  ██║██║██╔════╝██╔═══██╗██╔══██╗██╔════╝${r}
-${b}${w}  ██║   ██║██╔██╗ ██║██║██║     ██║   ██║██║  ██║█████╗${r}
-${b}${w}  ██║   ██║██║╚██╗██║██║██║     ██║   ██║██║  ██║██╔══╝${r}
-${b}${w}  ╚██████╔╝██║ ╚████║██║╚██████╗╚██████╔╝██████╔╝███████╗${r}
-${d}   ╚═════╝ ╚═╝  ╚═══╝╚═╝ ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝${r}
-${b}${c}      b r a i l l e   a n i m a t i o n s${r}
-
-`);
-
-  // Braille spinners only, 2 columns of 9
-  const left = [
-    ['Braille',    S.braille],
-    ['Orbit',      S.orbit],
-    ['Breathe',    S.breathe],
-    ['Snake',      S.snake],
-    ['Fill Sweep', S.fillsweep],
-    ['Diag Swipe', S.diagswipe],
-    ['Pulse',      S.pulse],
-    ['Scanline',   S.scanline],
-    ['Columns',    S.columns],
-  ];
-
-  const right = [
-    ['Checkerboard', S.checkerboard],
-    ['Scan',         S.scan],
-    ['Rain',         S.rain],
-    ['Sparkle',      S.sparkle],
-    ['Cascade',      S.cascade],
-    ['Wave Rows',    S.waverows],
-    ['Helix',        S.helix],
-    ['Braille Wave', S.braillewave],
-    ['DNA',          S.dna],
-  ];
-
-  const ROWS = left.length;
+  // Narrow terminal fallback
+  const termCols = out.columns || 80;
+  if (termCols < 60) {
+    out.write(`\n  ${B}unicode-animations${R} ${D}— 18 braille spinners + 4 classics${R}\n\n`);
+    cleanup();
+    return;
+  }
 
   function pad(str, n) { return str + ' '.repeat(Math.max(0, n - str.length)); }
 
+  // ─── Title (box-drawing art) ───
+  const titleLines = [
+    '██╗   ██╗███╗   ██╗██╗ ██████╗ ██████╗ ██████╗ ███████╗',
+    '██║   ██║████╗  ██║██║██╔════╝██╔═══██╗██╔══██╗██╔════╝',
+    '██║   ██║██╔██╗ ██║██║██║     ██║   ██║██║  ██║█████╗  ',
+    '██║   ██║██║╚██╗██║██║██║     ██║   ██║██║  ██║██╔══╝  ',
+    '╚██████╔╝██║ ╚████║██║╚██████╗╚██████╔╝██████╔╝███████╗',
+    ' ╚═════╝ ╚═╝  ╚═══╝╚═╝ ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝',
+  ];
+  const titleW = 57;
+
+  // ─── Spinner grid: 3 cols × 6 rows ───
+  const layout = [
+    ['braille',   'scan',         'rain'],
+    ['orbit',     'pulse',        'sparkle'],
+    ['breathe',   'cascade',      'waverows'],
+    ['snake',     'columns',      'helix'],
+    ['fillsweep', 'scanline',     'braillewave'],
+    ['diagswipe', 'checkerboard', 'dna'],
+  ];
+  const FPAD = 5;
+  const NPAD = 13;
+  const COL_W = FPAD + 1 + NPAD;
+  const GRID_W = COL_W * 3 + 4;
+  const CONTENT_W = Math.max(GRID_W, titleW) + 4;
+
+  // ─── Crop marks ───
+  const ARM = 1;
+  const inner = Math.max(0, CONTENT_W - 2 - ARM * 2);
+  const cropPad = '  ';
+  const topCrop  = cropPad + '\u280F' + '\u2809'.repeat(ARM) + ' '.repeat(inner) + '\u2809'.repeat(ARM) + '\u28B9';
+  const botCrop  = cropPad + '\u28C7' + '\u28C0'.repeat(ARM) + ' '.repeat(inner) + '\u28C0'.repeat(ARM) + '\u28F8';
+
+  // Indent title and subtitle
+  const titlePad = '  ';
+  const subtitlePad = ' '.repeat(Math.max(2, Math.floor((titleW - 18) / 2) + 2));
+
+  // ─── Render spinner grid ───
+  const ROWS = layout.length;
+
   function renderGrid(tick) {
     let buf = '';
-    for (let i = 0; i < ROWS; i++) {
-      const [ln, ls] = left[i];
-      const [rn, rs] = right[i];
-      const lf = ls.frames[tick % ls.frames.length];
-      const rf = rs.frames[tick % rs.frames.length];
-      buf += `    ${m}${pad(lf, 3)}${r}  ${d}${pad(ln, 12)}${r}  ${m}${pad(rf, 12)}${r}  ${d}${rn}${r}\n`;
+    for (const row of layout) {
+      let line = '     ';
+      for (let c = 0; c < 3; c++) {
+        const name = row[c];
+        const sp = S[name];
+        const frame = sp.frames[tick % sp.frames.length];
+        line += B + pad(frame, FPAD) + R + ' ' + D + pad(name, NPAD) + R;
+        if (c < 2) line += '  ';
+      }
+      buf += line + '\n';
     }
     return buf;
   }
 
+  // ─── Print static top ───
+  let top = '\n';
+  top += topCrop + '\n';
+  top += '\n';
+  for (let i = 0; i < titleLines.length; i++) {
+    const style = i === titleLines.length - 1 ? D : B;
+    top += titlePad + style + titleLines[i] + R + '\n';
+  }
+  top += subtitlePad + D + 'BRAILLE ANIMATIONS' + R + '\n';
+  top += '\n';
+  out.write(top);
+
+  // ─── Print first frame of spinners ───
+  out.write('\x1B7');
   out.write(renderGrid(0));
 
+  // ─── Print static bottom ───
+  let bot = '\n';
+  bot += '     ' + D + 'npx unicode-animations' + R + '           ' + D + 'demo all spinners' + R + '\n';
+  bot += '     ' + D + 'npx unicode-animations --list' + R + '    ' + D + 'list all spinners' + R + '\n';
+  bot += '     ' + D + 'npx unicode-animations --web' + R + '     ' + D + 'open in browser' + R + '\n';
+  bot += '\n';
+  bot += botCrop + '\n';
+  out.write(bot);
+
+  const LINES_BELOW = 6;
+
+  // ─── Animate ───
   let tick = 1;
   const start = Date.now();
 
   const timer = setInterval(() => {
     if (Date.now() - start >= DURATION) {
       clearInterval(timer);
-      out.write(`\n  ${g}${b}✔${r} ${b}unicode-animations${r} ${d}— 18 braille spinners + 4 classics${r}\n\n`);
+      out.write('\x1B8');
+      out.write(`\x1B[${ROWS + LINES_BELOW}B`);
+      out.write('\n');
       cleanup();
       return;
     }
-    out.write(`\x1B[${ROWS}A`);
+    out.write('\x1B8');
     out.write(renderGrid(tick));
     tick++;
   }, INTERVAL);
+
 } catch {
   try { out.write('\x1B[?25h'); } catch {}
   process.exit(0);

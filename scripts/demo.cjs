@@ -51,6 +51,20 @@ const cleanup = () => { try { out.write(show); } catch {} };
 process.on('SIGINT', () => { cleanup(); out.write('\n'); process.exit(0); });
 process.on('exit', cleanup);
 
+// Enable raw mode so keypresses (q, Ctrl+C, Esc) are caught immediately
+if (process.stdin.isTTY) {
+  process.stdin.setRawMode(true);
+  process.stdin.resume();
+  process.stdin.on('data', (key) => {
+    // q, Ctrl+C, or Escape
+    if (key[0] === 0x71 || key[0] === 0x03 || key[0] === 0x1B) {
+      cleanup();
+      out.write('\n');
+      process.exit(0);
+    }
+  });
+}
+
 if (args[0] === '--list' || args[0] === '-l') {
   cleanup();
   out.write(`\n${bold}22 spinners available:${reset}\n\n`);
