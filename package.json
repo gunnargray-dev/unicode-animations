@@ -1,6 +1,6 @@
 {
   "name": "unicode-animations",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Unicode spinner animations as raw frame data",
   "type": "module",
   "exports": {
@@ -63,6 +63,6 @@
     "vitest": "^3.0.0"
   },
   "dependencies": {
-    "unicode-animations": "^1.0.0"
+    "unicode-animations": "^1.0.1"
   }
 }

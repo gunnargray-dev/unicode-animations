@@ -116,7 +116,7 @@ try {
         line += B + padBraille(frame, colFPad[c]) + R + ' ' + D + pad(name, NPAD) + R;
         if (c < 2) line += '  ';
       }
-      buf += CL + line + '\n';
+      buf += CL + '\r' + line + '\n';
     }
     return buf;
   }
@@ -160,7 +160,7 @@ try {
       cleanup();
       return;
     }
-    out.write(`\x1B[${ROWS}A`);
+    out.write(`\x1B[${ROWS}A\r`);
     out.write(renderGrid(tick));
     tick++;
   }, INTERVAL);
